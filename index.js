@@ -1,0 +1,27 @@
+const express = require('express')
+const app = express();
+const cors = require('cors')
+const path = require('path')
+
+app.use(cors())
+app.use(express.json({ extended: false }))
+app.use(express.urlencoded({ extended: true }))
+
+
+//use express static folder
+app.use('/api', express.static(path.join(__dirname, '/public')))
+
+//database
+const db = require("./model/index.model");
+// db.sequelize.sync({ force: true, alter: true });
+db.sequelize.sync();
+
+app.get('/', (req, res) => {
+    return res.send('Welcome to api')
+})
+
+app.use('/api', require('./routes/index.route'))
+
+app.listen(3000, () => {
+    console.log('server is running on port: 3000');
+})
