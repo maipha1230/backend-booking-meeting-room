@@ -2,9 +2,10 @@ const express = require('express')
 const router = express.Router()
 const meetingRoomController = require('../../controller/admin/meeting-room.controller')
 const userController = require('../../controller/admin/users.controller')
+const multer = require('../../services/upload-image/multer')
 
 //create meeting room
-router.post('/createMeetingRoom', meetingRoomController.createMeetingRoom)
+router.post('/createMeetingRoom', multer.uploadImages, multer.resizeImagesMeetingRoom, multer.getResult, meetingRoomController.createMeetingRoom)
 
 //get meeting room
 router.get('/getMeetingRoom', meetingRoomController.getMeetingRoom)

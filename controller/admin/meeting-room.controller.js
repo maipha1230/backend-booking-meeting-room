@@ -3,13 +3,13 @@ const fs = require("fs");
 const path = require("path");
 const createMeetingRoom = async(req, res) => {
     try {
+        
         const create = await MeetingRoom.create({
             room_name: req.body.room_name,
             room_size_id: req.body.room_size_id,
             room_capacity: req.body.room_capacity,
             room_status_id: req.body.room_status_id
         })
-
 
         if (req.body.gallery) {
             let room_id = await MeetingRoom.findOne({
@@ -43,7 +43,15 @@ const getMeetingRoom = async(req, res) => {
                 {
                     model: MeetingRoomGallery,
                     attributes: ['img_path']
-                }
+                },
+                {
+                    model: MeetingRoomSize,
+                    attributes: ['name']
+                },
+                {
+                    model: MeetingRoomStatus,
+                    attributes: ['name']
+                },
             ]
         })
 
@@ -52,12 +60,23 @@ const getMeetingRoom = async(req, res) => {
         data.forEach((item) => {
             let temp = {}
             temp.room_id = item.room_id
+            temp.room_name = item.room_name
             temp.room_size_id = item.room_size_id,
+            temp.room_size = item.room_size.name
             temp.room_capacity = item.room_capacity
             temp.room_status_id = item.room_status_id
+            temp.room_status = item.room_status.name
+            temp.room_gallery = []
+            temp.room_img_name = []
+            item.room_galleries.reverse();
+            item.room_galleries.forEach((img) => {
+                temp.room_gallery.push("http://localhost:3000/api/image/meeting-room/"+img.img_path)
+                temp.room_img_name.push(img.img_path)
+            })
+            meeting_room.push(temp)
         })
 
-        return res.send({ status: 1, data: data })
+        return res.send({ status: 1, data: meeting_room })
     } catch (err) {
         return res.status(500).send(err.message)
     }
