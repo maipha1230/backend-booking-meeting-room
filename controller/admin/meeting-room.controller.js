@@ -1,6 +1,7 @@
 const { MeetingRoom, MeetingRoomGallery, MeetingRoomSize, MeetingRoomStatus } = require('../../model/index.model')
 const fs = require("fs");
 const path = require("path");
+const meetingRoomGallery = require('../../model/schema/meeting-room/meeting-room-gallery');
 const createMeetingRoom = async(req, res) => {
     try {
         
@@ -67,16 +68,63 @@ const getMeetingRoom = async(req, res) => {
             temp.room_status_id = item.room_status_id
             temp.room_status = item.room_status.name
             temp.room_gallery = []
-            temp.room_img_name = []
             item.room_galleries.reverse();
             item.room_galleries.forEach((img) => {
-                temp.room_gallery.push("http://localhost:3000/api/image/meeting-room/"+img.img_path)
-                temp.room_img_name.push(img.img_path)
+                temp.room_gallery.push( {
+                    img_path: "http://localhost:3000/api/image/meeting-room/"+img.img_path,
+                    img_name: img.img_path
+                } )
             })
             meeting_room.push(temp)
         })
 
         return res.send({ status: 1, data: meeting_room })
+    } catch (err) {
+        return res.status(500).send(err.message)
+    }
+}
+
+const getMeetingRoomById = async(req, res) => {
+    try {
+        const room_id = req.params.room_id
+
+        const room = await MeetingRoom.findOne({
+            where: {
+                room_id: room_id
+            },
+            include: [
+                {
+                    model: MeetingRoomSize,
+                    attributes: ['room_size_id']
+                },
+                {
+                    model: MeetingRoomStatus,
+                    attributes: ['room_status_id']
+                },
+                {
+                    model: MeetingRoomGallery,
+                    attributes: ['img_path']
+                }
+            ]
+        })
+
+        room.room_galleries.reverse();
+
+        let data = {}
+        data.room_id = room.room_id
+        data.room_name = room.room_name
+        data.room_size_id = room.room_size_id
+        data.room_status_id = room.room_status_id
+        data.room_capacity = room.room_capacity
+        data.room_gallery = []
+        room.room_galleries.forEach((item) => {
+            data.room_gallery.push({
+                img_path: "http://localhost:3000/api/image/meeting-room/"+item.img_path,
+                img_name: String(item.img_path)
+            })
+        })
+        return res.send({ status: 1, data: data })
+
     } catch (err) {
         return res.status(500).send(err.message)
     }
@@ -97,6 +145,19 @@ const updateMeetingRoom = async(req, res) => {
                 room_id: room_id
             }
         })
+
+        if (req.body.gallery) {
+            let gallery = []
+            for(let i = 0; i < req.body.gallery.length; i++){
+                gallery.push({
+                    img_path: req.body.gallery[i],
+                    room_id: room_id
+                })
+            }
+
+            const insertRoomGallery = await MeetingRoomGallery.bulkCreate(gallery)
+        }
+
         return res.send({ status: 1, msg: 'แก้ไขห้องประชุมสำเร็จ' })
     } catch (err) {
         return res.status(500).send(err.message)
@@ -141,6 +202,35 @@ const removeMeetingRoom = async(req, res) => {
           })
         
         return res.send({ status: 1, msg: 'ลบห้องประชุมสำเร็จ' })
+    } catch (err) {
+        return res.status(500).send(err.message)
+    }
+}
+
+const removeMeetingRoomImage = async(req, res) => {
+    try {
+        const image_name = req.body.image_name
+
+        try {
+            let absolutePath = path.resolve(
+              "public/image/meeting-room/" + image_name
+            );
+            if (fs.existsSync(absolutePath)) {
+              fs.unlinkSync(String(absolutePath));
+              console.log("delete " + absolutePath);
+            }
+          } catch (error) {
+            res.status(500).send(error.message);
+          }
+
+        const remove = await MeetingRoomGallery.destroy({
+            where: {
+                img_path: image_name
+            }
+        })
+
+        return res.send({ status: 1, msg: 'ลบรูปภาพสำเร็จ' })
+
     } catch (err) {
         return res.status(500).send(err.message)
     }
@@ -259,6 +349,7 @@ const removeMeetingRoomStatus = async(req, res) => {
 module.exports = {
     createMeetingRoom: createMeetingRoom,
     getMeetingRoom: getMeetingRoom,
+    getMeetingRoomById: getMeetingRoomById,
     updateMeetingRoom: updateMeetingRoom,
     removeMeetingRoom: removeMeetingRoom,
     createMeetingRoom: createMeetingRoom,
@@ -269,6 +360,7 @@ module.exports = {
     createMeetingRoomStatus: createMeetingRoomStatus,
     getMeetingRoomStatus: getMeetingRoomStatus,
     updateMeetingRoomStatus: updateMeetingRoomStatus,
-    removeMeetingRoomStatus: removeMeetingRoomStatus
+    removeMeetingRoomStatus: removeMeetingRoomStatus,
+    removeMeetingRoomImage: removeMeetingRoomImage
     
 }

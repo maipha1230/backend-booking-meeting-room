@@ -10,11 +10,17 @@ router.post('/createMeetingRoom', multer.uploadImages, multer.resizeImagesMeetin
 //get meeting room
 router.get('/getMeetingRoom', meetingRoomController.getMeetingRoom)
 
+//get meeting room by Id
+router.get('/getMeetingRoomById/:room_id', meetingRoomController.getMeetingRoomById)
+
 //update meeting room
-router.put('/updateMeetingRoom/:room_id', meetingRoomController.updateMeetingRoom)
+router.put('/updateMeetingRoom/:room_id', multer.uploadImages, multer.resizeImagesMeetingRoom, multer.getResult, meetingRoomController.updateMeetingRoom)
 
 //remove meeting room
 router.delete('/removeMeetingRoom/:room_id', meetingRoomController.removeMeetingRoom)
+
+//remove meeting room image
+router.post('/removeMeetingRoomImage', meetingRoomController.removeMeetingRoomImage)
 
 //create meeting room size
 router.post('/createMeetingRoomSize', meetingRoomController.createMeetingRoomSize)
