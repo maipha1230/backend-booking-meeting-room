@@ -149,7 +149,7 @@ const updateUser = async (req, res) => {
 
     console.log(req.body);
 
-    if (req.body.gallery) {
+    if (req.body.gallery.length > 0) {
       let old_image = await User.findOne({
         where: {
           user_id: user_id,
@@ -157,10 +157,10 @@ const updateUser = async (req, res) => {
         attributes: ["picture_url"],
       });
 
-      if (old_image) {
+      if (old_image.picture_url) {
         try {
           let absolutePath = path.resolve(
-            "public/image/profile" + old_image.picture_url
+            "public/image/profile/" + old_image.picture_url
           );
           if (fs.existsSync(absolutePath)) {
             fs.unlinkSync(String(absolutePath));
@@ -227,10 +227,10 @@ const removeUser = async (req, res) => {
       attributes: ["picture_url"],
     });
 
-    if (old_image) {
+    if (old_image.picture_url) {
       try {
         let absolutePath = path.resolve(
-          "public/image/profile" + old_image.picture_url
+          "public/image/profile/" + old_image.picture_url
         );
         if (fs.existsSync(absolutePath)) {
           fs.unlinkSync(String(absolutePath));
@@ -246,12 +246,32 @@ const removeUser = async (req, res) => {
         user_id: user_id,
       },
     });
-
     return res.send({ status: 1, msg: "ลบผู้ใช้งานสำเร็จ" });
   } catch (err) {
     return res.status(500).send(err.message);
   }
 };
+
+const resetUserPassword = async (req, res) => {
+  try {
+    const user_id = req.params.user_id
+
+    const password = await bcrypt.hash(req.body.password, 10);
+
+    const reset = await User.update({
+      password: password
+    },
+    {
+      where: {
+        user_id: user_id
+      }
+    })
+    return res.send({status: 1, msg: "รีเซ็ทรหัสผ่านสำเร็จ"})
+  } catch (err) {
+    return res.status(500).send(err.message)
+  }
+}
+
 
 const createUserRole = async (req, res) => {
   try {
@@ -263,6 +283,8 @@ const createUserRole = async (req, res) => {
     return res.status(500).send(err.message);
   }
 };
+
+
 
 const getUserRole = async (req, res) => {
   try {
@@ -601,6 +623,7 @@ module.exports = {
   getUserById: getUserById,
   updateUser: updateUser,
   removeUser: removeUser,
+  resetUserPassword: resetUserPassword,
   createUserRole: createUserRole,
   getUserRole: getUserRole,
   updateUserRole: updateUserRole,

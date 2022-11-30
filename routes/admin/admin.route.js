@@ -63,10 +63,13 @@ router.get('/getUsers', userController.getUsers)
 router.get('/getUserById/:user_id', userController.getUserById)
 
 //update user
-router.put('/updateUser/:user_id', userController.updateUser)
+router.put('/updateUser/:user_id', multer.uploadImages, multer.resizeImagesUser, multer.getResult, userController.updateUser)
 
 //remove user
 router.delete('/removeUser/:user_id', userController.removeUser)
+
+//reset user password
+router.put('/resetUserPassword/:user_id', userController.resetUserPassword)
 
 //create user role
 router.post('/createUserRole', userController.createUserRole)
