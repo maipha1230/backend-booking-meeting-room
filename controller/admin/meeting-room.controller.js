@@ -178,7 +178,7 @@ const removeMeetingRoom = async(req, res) => {
         await gallery.forEach((item) => {
             try {
               let absolutePath = path.resolve(
-                "public/images/meeting-room/" + item.img_path
+                "public/image/meeting-room/" + item.img_path
               );
               if (fs.existsSync(absolutePath)) {
                 fs.unlinkSync(String(absolutePath));
@@ -188,12 +188,6 @@ const removeMeetingRoom = async(req, res) => {
               res.status(500).send(error.message);
             }
           });
-
-          const removeRoomGallery = await MeetingRoomGallery.destroy({
-            where: {
-                room_id: room_id
-            }
-          })
 
           const removeMeetingRoom = await MeetingRoom.destroy({
             where: {
@@ -332,12 +326,20 @@ const removeMeetingRoomStatus = async(req, res) => {
     try {
         const room_status_id = req.params.room_status_id
 
-        const remove = await MeetingRoomStatus.destroy({
-            where: {
-                room_status_id: room_status_id
-            }
-        })
-        return res.send({ status: 1, msg: 'ลบสถานะห้องประชุมสำเร็จ' })
+        const count = await MeetingRoomStatus.count();
+
+        if (count == 2) {
+            return res.send({ status: 2, msg: "ไม่สามารถลบสถานะห้องประชุมได้" })
+        } else {
+            const remove = await MeetingRoomStatus.destroy({
+                where: {
+                    room_status_id: room_status_id
+                }
+            })
+            return res.send({ status: 1, msg: 'ลบสถานะห้องประชุมสำเร็จ' })
+        }
+
+        
     } catch (err) {
         return res.status(500).send(err.message)
     }

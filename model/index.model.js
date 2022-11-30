@@ -32,7 +32,7 @@ db.UserAffiliation = require('./schema/users/user-affiliation')(sequelize, Seque
 db.UserPosition = require('./schema/users/user-position')(sequelize, Sequelize)
 db.UserRank = require('./schema/users/user-rank')(sequelize, Sequelize)
 db.UserType = require('./schema/users/user-type')(sequelize, Sequelize)
-
+db.UserStatus = require('./schema/users/user-status')(sequelize, Sequelize)
 
 
 
@@ -55,5 +55,7 @@ db.UserType.hasOne(db.User, { foreignKey: 'user_type_id' })
 db.User.belongsTo(db.UserType, { foreignKey: 'user_type_id' })
 db.UserRole.hasOne(db.User, { foreignKey: 'user_role_id' })
 db.User.belongsTo(db.UserRole, { foreignKey: 'user_role_id' })
+db.UserStatus.hasOne(db.User, { foreignKey:  'user_status_id'})
+db.User.belongsTo(db.UserStatus, { foreignKey: 'user_status_id' })
 
 module.exports = db

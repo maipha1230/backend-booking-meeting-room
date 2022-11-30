@@ -14,6 +14,9 @@ module.exports = (sequelize, Sequelize) => {
         l_name: {
           type: Sequelize.STRING(50),
         },
+        password: {
+          type: Sequelize.STRING 
+        },
         phone: {
             type: Sequelize.STRING(10)
         },
@@ -41,7 +44,7 @@ module.exports = (sequelize, Sequelize) => {
         user_role_id: {
             type: Sequelize.INTEGER
         },
-        user_status: {
+        user_status_id: {
             type: Sequelize.INTEGER
         }
       },

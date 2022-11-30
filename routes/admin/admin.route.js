@@ -19,6 +19,9 @@ router.put('/updateMeetingRoom/:room_id', multer.uploadImages, multer.resizeImag
 //remove meeting room
 router.delete('/removeMeetingRoom/:room_id', meetingRoomController.removeMeetingRoom)
 
+//remove meeting room
+router.delete('/removeMeetingRoom/:room_id', meetingRoomController.removeMeetingRoom)
+
 //remove meeting room image
 router.post('/removeMeetingRoomImage', meetingRoomController.removeMeetingRoomImage)
 
@@ -45,6 +48,25 @@ router.delete('/removeMeetingRoomStatus/:room_status_id', meetingRoomController.
 
 //update meeting room status
 router.put('/updateMeetingRoomStatus/:room_status_id', meetingRoomController.updateMeetingRoomStatus)
+
+
+
+///////////////////// users  ////////////////////////
+
+//create user
+router.post('/createUser', multer.uploadImages, multer.resizeImagesUser, multer.getResult, userController.createUser)
+
+//get users
+router.get('/getUsers', userController.getUsers)
+
+//get user by id
+router.get('/getUserById/:user_id', userController.getUserById)
+
+//update user
+router.put('/updateUser/:user_id', userController.updateUser)
+
+//remove user
+router.delete('/removeUser/:user_id', userController.removeUser)
 
 //create user role
 router.post('/createUserRole', userController.createUserRole)
@@ -105,6 +127,18 @@ router.put('/updateUserType/:user_type_id', userController.updateUserType)
 
 //remove  user type
 router.delete('/removeUserType/:user_type_id', userController.removeUserType)
+
+//create user status
+router.post('/createUserStatus', userController.createUserStatus)
+
+//get user status
+router.get('/getUserStatus', userController.getUserStatus)
+
+//update user status
+router.put('/updateUserStatus/:user_status_id', userController.updateUserStatus)
+
+//remove  user status
+router.delete('/removeUserStatus/:user_status_id', userController.removeUserStatus)
 
 
 
