@@ -7,11 +7,13 @@ const {
   UserAffiliation,
   UserStatus,
 } = require("../../model/index.model");
-
+const { USER_IMAGE_PATH, JWT_SECRET } = require("../../config/config");
 const bcrypt = require("bcrypt");
 
 const path = require("path");
 const fs = require("fs");
+
+const jwt = require("jsonwebtoken");
 
 const createUser = async (req, res) => {
   try {
@@ -58,6 +60,9 @@ const createUser = async (req, res) => {
 const getUsers = async (req, res) => {
   try {
     const users = await User.findAll({
+      where: {
+        user_role_id: 2
+      },
       order: [["createdAt", "DESC"]],
       include: [
         {
@@ -92,8 +97,7 @@ const getUsers = async (req, res) => {
       temp.phone = user.phone;
       temp.email = user.email;
       if (user.picture_url) {
-        temp.picture_url =
-          "http://localhost:3000/api/image/profile/" + user.picture_url;
+        temp.picture_url = USER_IMAGE_PATH + user.picture_url;
       } else {
         temp.picture_url = "";
       }
@@ -119,6 +123,7 @@ const getUserById = async (req, res) => {
     const user = await User.findOne({
       where: {
         user_id: user_id,
+        user_role_id: 2
       },
     });
 
@@ -129,8 +134,7 @@ const getUserById = async (req, res) => {
     data.phone = user.phone;
     data.email = user.email;
     data.password = user.password;
-    data.picture_url =
-      "http://localhost:3000/api/image/profile/" + user.picture_url;
+    data.picture_url = USER_IMAGE_PATH + user.picture_url;
     data.affiliation_id = user.user_affiliation_id;
     data.position_id = user.user_position_id;
     data.rank_id = user.user_rank_id;
@@ -153,6 +157,7 @@ const updateUser = async (req, res) => {
       let old_image = await User.findOne({
         where: {
           user_id: user_id,
+          user_role_id: 2
         },
         attributes: ["picture_url"],
       });
@@ -187,7 +192,7 @@ const updateUser = async (req, res) => {
         {
           where: {
             user_id: user_id,
-          }
+          },
         }
       );
     } else {
@@ -206,7 +211,7 @@ const updateUser = async (req, res) => {
         {
           where: {
             user_id: user_id,
-          }
+          },
         }
       );
     }
@@ -254,24 +259,288 @@ const removeUser = async (req, res) => {
 
 const resetUserPassword = async (req, res) => {
   try {
-    const user_id = req.params.user_id
+    const user_id = req.params.user_id;
 
     const password = await bcrypt.hash(req.body.password, 10);
 
-    const reset = await User.update({
-      password: password
-    },
-    {
-      where: {
-        user_id: user_id
+    const reset = await User.update(
+      {
+        password: password,
+      },
+      {
+        where: {
+          user_id: user_id,
+        },
       }
-    })
-    return res.send({status: 1, msg: "รีเซ็ทรหัสผ่านสำเร็จ"})
+    );
+    return res.send({ status: 1, msg: "รีเซ็ทรหัสผ่านสำเร็จ" });
   } catch (err) {
-    return res.status(500).send(err.message)
+    return res.status(500).send(err.message);
   }
-}
+};
 
+const createAdmin = async (req, res) => {
+  try {
+    console.log(req.body);
+    const password = await bcrypt.hash(req.body.password, 10);
+
+    if (req.body.gallery) {
+      const create = await User.create({
+        f_name: req.body.f_name,
+        l_name: req.body.l_name,
+        password: password,
+        phone: req.body.phone,
+        email: req.body.email,
+        picture_url: req.body.gallery[0],
+        user_affiliation_id: req.body.affiliation,
+        user_position_id: req.body.position,
+        user_rank_id: req.body.rank,
+        user_type_id: req.body.type,
+        user_role_id: 1,
+        user_status_id: req.body.status,
+      });
+    } else {
+      const create = await User.create({
+        f_name: req.body.f_name,
+        l_name: req.body.l_name,
+        password: password,
+        phone: req.body.phone,
+        email: req.body.email,
+        user_affiliation_id: req.body.affiliation,
+        user_position_id: req.body.position,
+        user_rank_id: req.body.rank,
+        user_type_id: req.body.type,
+        user_role_id: 1,
+        user_status_id: req.body.status,
+      });
+    }
+
+    return res.send({ status: 1, msg: "เพิ่มผู้ดูแลระบบสำเร็จ" });
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+};
+
+const getAdmins = async (req, res) => {
+  try {
+    const users = await User.findAll({
+      where: {
+        user_role_id: 1
+      },
+      order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: UserAffiliation,
+          attributes: ["user_affiliation_name"],
+        },
+        {
+          model: UserPosition,
+          attributes: ["user_position_name"],
+        },
+        {
+          model: UserRank,
+          attributes: ["user_rank_name"],
+        },
+        {
+          model: UserType,
+          attributes: ["user_type_name"],
+        },
+        {
+          model: UserStatus,
+          attributes: ["user_status_id"],
+        },
+      ],
+    });
+
+    let data = [];
+    users.forEach((user) => {
+      let temp = {};
+      temp.user_id = user.user_id;
+      temp.f_name = user.f_name;
+      temp.l_name = user.l_name;
+      temp.phone = user.phone;
+      temp.email = user.email;
+      if (user.picture_url) {
+        temp.picture_url = USER_IMAGE_PATH + user.picture_url;
+      } else {
+        temp.picture_url = "";
+      }
+      temp.affiliation = user.user_affiliation.user_affiliation_name;
+      temp.position = user.user_position.user_position_name;
+      temp.rank = user.user_rank.user_rank_name;
+      temp.type = user.user_type.user_type_name;
+      temp.status = user.user_status.user_status_id;
+
+      data.push(temp);
+    });
+
+    return res.send({ status: 1, data: data });
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+};
+
+const getAdminById = async (req, res) => {
+  try {
+    const user_id = req.params.user_id;
+
+    const user = await User.findOne({
+      where: {
+        user_id: user_id,
+        user_role_id: 1
+      },
+    });
+
+    data = {};
+    data.user_id = user.user_id;
+    data.f_name = user.f_name;
+    data.l_name = user.l_name;
+    data.phone = user.phone;
+    data.email = user.email;
+    data.password = user.password;
+    data.picture_url = USER_IMAGE_PATH + user.picture_url;
+    data.affiliation_id = user.user_affiliation_id;
+    data.position_id = user.user_position_id;
+    data.rank_id = user.user_rank_id;
+    data.type_id = user.user_type_id;
+    data.status_id = user.user_status_id;
+
+    return res.send({ status: 1, data: data });
+  } catch (err) {
+    return res.status(err.message);
+  }
+};
+
+const updateAdmin = async (req, res) => {
+  try {
+    const user_id = req.params.user_id;
+
+    console.log(req.body);
+
+    if (req.body.gallery.length > 0) {
+      let old_image = await User.findOne({
+        where: {
+          user_id: user_id,
+        },
+        attributes: ["picture_url"],
+      });
+
+      if (old_image.picture_url) {
+        try {
+          let absolutePath = path.resolve(
+            "public/image/profile/" + old_image.picture_url
+          );
+          if (fs.existsSync(absolutePath)) {
+            fs.unlinkSync(String(absolutePath));
+            console.log("delete " + absolutePath);
+          }
+        } catch (error) {
+          res.status(500).send(error.message);
+        }
+      }
+
+      const update = await User.update(
+        {
+          f_name: req.body.f_name,
+          l_name: req.body.l_name,
+          phone: req.body.phone,
+          email: req.body.email,
+          picture_url: req.body.gallery[0],
+          user_affiliation_id: req.body.affiliation,
+          user_position_id: req.body.position,
+          user_rank_id: req.body.rank,
+          user_type_id: req.body.type,
+          user_status_id: req.body.status,
+        },
+        {
+          where: {
+            user_id: user_id,
+          },
+        }
+      );
+    } else {
+      const update = await User.update(
+        {
+          f_name: req.body.f_name,
+          l_name: req.body.l_name,
+          phone: req.body.phone,
+          email: req.body.email,
+          user_affiliation_id: req.body.affiliation,
+          user_position_id: req.body.position,
+          user_rank_id: req.body.rank,
+          user_type_id: req.body.type,
+          user_status_id: req.body.status,
+        },
+        {
+          where: {
+            user_id: user_id,
+          },
+        }
+      );
+    }
+    return res.send({ status: 1, msg: "แก้ไขผู้ดูแลระบบสำเร็จ" });
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+};
+
+const removeAdmin = async (req, res) => {
+  try {
+    const user_id = req.params.user_id;
+
+    const old_image = await User.findOne({
+      where: {
+        user_id: user_id,
+      },
+      attributes: ["picture_url"],
+    });
+
+    if (old_image.picture_url) {
+      try {
+        let absolutePath = path.resolve(
+          "public/image/profile/" + old_image.picture_url
+        );
+        if (fs.existsSync(absolutePath)) {
+          fs.unlinkSync(String(absolutePath));
+          console.log("delete " + absolutePath);
+        }
+      } catch (error) {
+        res.status(500).send(error.message);
+      }
+    }
+
+    const remove = await User.destroy({
+      where: {
+        user_id: user_id,
+      },
+    });
+    return res.send({ status: 1, msg: "ลบผู้ดูแลระบบสำเร็จ" });
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+};
+
+const resetAdminPassword = async (req, res) => {
+  try {
+    const user_id = req.params.user_id;
+
+    const password = await bcrypt.hash(req.body.password, 10);
+
+    const reset = await User.update(
+      {
+        password: password,
+      },
+      {
+        where: {
+          user_id: user_id,
+        },
+      }
+    );
+    return res.send({ status: 1, msg: "รีเซ็ทรหัสผ่านสำเร็จ" });
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+};
 
 const createUserRole = async (req, res) => {
   try {
@@ -283,8 +552,6 @@ const createUserRole = async (req, res) => {
     return res.status(500).send(err.message);
   }
 };
-
-
 
 const getUserRole = async (req, res) => {
   try {
@@ -617,6 +884,71 @@ const removeUserStatus = async (req, res) => {
   }
 };
 
+const getAdminLoginForm = async (req, res) => {
+  try {
+    const data = await User.findAll({
+      attributes: ["user_id", "f_name", "l_name"],
+      order: [["f_name", "asc"]],
+      where: {
+        user_role_id: 1,
+      },
+    });
+
+    return res.send({ status: 1, data: data });
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+};
+
+const adminLogin = async (req, res) => {
+  try {
+    const user_id = req.body.user_id;
+
+    const user = await User.findOne({
+      where: {
+        user_id: user_id,
+        user_role_id: 1,
+      },
+      attributes: [
+        "f_name",
+        "l_name",
+        "picture_url",
+        "password",
+        "user_status_id",
+      ],
+    });
+
+    if (user) {
+      const check_password = bcrypt.compareSync(
+        req.body.password,
+        user.password
+      );
+
+      if (check_password) {
+        if (user.user_status_id == 1) {
+          const login_token = jwt.sign({ user_id: user_id }, JWT_SECRET, {
+            expiresIn: "2h",
+          });
+
+          return res.send({
+            status: 1,
+            msg: "เข้าสู่ระบบสำเร็จ",
+            token: login_token,
+          });
+        } else if (user.user_status_id == 2) {
+          return res.send({ status: 2, msg: "คุณถูกระงับการใช้งาน" });
+        }
+      } else {
+        return res.send({ status: 3, msg: "รหัสผ่านไม่ถูกต้อง" });
+      }
+    } else {
+      return res.send({ status: 4, msg: "ไม่มีผู้ดูแลในระบบ" })
+    }
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+};
+
 module.exports = {
   createUser: createUser,
   getUsers: getUsers,
@@ -648,4 +980,6 @@ module.exports = {
   getUserStatus: getUserStatus,
   updateUserStatus: updateUserStatus,
   removeUserStatus: removeUserStatus,
+  getAdminLoginForm: getAdminLoginForm,
+  adminLogin: adminLogin,
 };

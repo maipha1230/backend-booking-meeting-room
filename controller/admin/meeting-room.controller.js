@@ -1,7 +1,8 @@
 const { MeetingRoom, MeetingRoomGallery, MeetingRoomSize, MeetingRoomStatus } = require('../../model/index.model')
 const fs = require("fs");
 const path = require("path");
-const meetingRoomGallery = require('../../model/schema/meeting-room/meeting-room-gallery');
+
+const { ROOM_IMAGE_PATH } = require('../../config/config')
 const createMeetingRoom = async(req, res) => {
     try {
         
@@ -71,7 +72,7 @@ const getMeetingRoom = async(req, res) => {
             item.room_galleries.reverse();
             item.room_galleries.forEach((img) => {
                 temp.room_gallery.push( {
-                    img_path: "http://localhost:3000/api/image/meeting-room/"+img.img_path,
+                    img_path: ROOM_IMAGE_PATH + img.img_path,
                     img_name: img.img_path
                 } )
             })
@@ -119,7 +120,7 @@ const getMeetingRoomById = async(req, res) => {
         data.room_gallery = []
         room.room_galleries.forEach((item) => {
             data.room_gallery.push({
-                img_path: "http://localhost:3000/api/image/meeting-room/"+item.img_path,
+                img_path: ROOM_IMAGE_PATH + item.img_path,
                 img_name: String(item.img_path)
             })
         })

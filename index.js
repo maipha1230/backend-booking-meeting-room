@@ -2,7 +2,7 @@ const express = require('express')
 const app = express();
 const cors = require('cors')
 const path = require('path')
-
+const { PORT} = require('./config/config')
 app.use(cors())
 app.use(express.json({ extended: false }))
 app.use(express.urlencoded({ extended: true }))
@@ -22,6 +22,6 @@ app.get('/', (req, res) => {
 
 app.use('/api', require('./routes/index.route'))
 
-app.listen(3000, () => {
+app.listen(PORT || 3000, () => {
     console.log('server is running on port: 3000');
 })
