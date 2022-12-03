@@ -555,7 +555,9 @@ const createUserRole = async (req, res) => {
 
 const getUserRole = async (req, res) => {
   try {
-    const data = await UserRole.findAll();
+    const data = await UserRole.findAll({
+      order: [['user_role_name', 'asc']]
+    });
     return res.send({ status: 1, data: data });
   } catch (err) {
     return res.status(500).send(err.message);
@@ -616,7 +618,9 @@ const createUserPosition = async (req, res) => {
 
 const getUserPosition = async (req, res) => {
   try {
-    const data = await UserPosition.findAll();
+    const data = await UserPosition.findAll({
+      order: [['user_position_name', 'asc']]
+    });
     return res.send({ status: 1, data: data });
   } catch (err) {
     return res.status(500).send(err.message);
@@ -671,7 +675,9 @@ const createUserAffiliation = async (req, res) => {
 
 const getUserAffiliation = async (req, res) => {
   try {
-    const data = await UserAffiliation.findAll();
+    const data = await UserAffiliation.findAll({
+      order: [['user_affiliation_name', 'asc']]
+    });
     return res.send({ status: 1, data: data });
   } catch (err) {
     return res.status(500).send(err.message);
@@ -726,7 +732,9 @@ const createUserRank = async (req, res) => {
 
 const getUserRank = async (req, res) => {
   try {
-    const data = await UserRank.findAll();
+    const data = await UserRank.findAll({
+      order: [['user_rank_name', 'asc']]
+    });
     return res.send({ status: 1, data: data });
   } catch (err) {
     return res.status(500).send(err.message);
@@ -781,7 +789,9 @@ const createUserType = async (req, res) => {
 
 const getUserType = async (req, res) => {
   try {
-    const data = await UserType.findAll();
+    const data = await UserType.findAll({
+      order: [['user_type_name', 'asc']]
+    });
     return res.send({ status: 1, data: data });
   } catch (err) {
     return res.status(500).send(err.message);
@@ -836,7 +846,9 @@ const createUserStatus = async (req, res) => {
 
 const getUserStatus = async (req, res) => {
   try {
-    const data = await UserStatus.findAll();
+    const data = await UserStatus.findAll({
+      order: [['user_status_name', 'asc']]
+    });
     return res.send({ status: 1, data: data });
   } catch (err) {
     return res.status(500).send(err.message);
@@ -956,6 +968,12 @@ module.exports = {
   updateUser: updateUser,
   removeUser: removeUser,
   resetUserPassword: resetUserPassword,
+  createAdmin: createAdmin,
+  getAdmins: getAdmins,
+  getAdminById: getAdminById,
+  updateAdmin: updateAdmin,
+  removeAdmin: removeAdmin,
+  resetAdminPassword: resetAdminPassword,
   createUserRole: createUserRole,
   getUserRole: getUserRole,
   updateUserRole: updateUserRole,

@@ -71,6 +71,24 @@ router.delete('/removeUser/:user_id', userController.removeUser)
 //reset user password
 router.put('/resetUserPassword/:user_id', userController.resetUserPassword)
 
+//create admin
+router.post('/createAdmin', multer.uploadImages, multer.resizeImagesUser, multer.getResult, userController.createAdmin)
+
+//get admins
+router.get('/getAdmins', userController.getAdmins)
+
+//get adminby id
+router.get('/getAdminById/:user_id', userController.getAdminById)
+
+//update admin
+router.put('/updateAdmin/:user_id', multer.uploadImages, multer.resizeImagesUser, multer.getResult, userController.updateAdmin)
+
+//remove admin
+router.delete('/removeAdmin/:user_id', userController.removeAdmin)
+
+//reset admin password
+router.put('/resetAdminPassword/:user_id', userController.resetAdminPassword)
+
 //create user role
 router.post('/createUserRole', userController.createUserRole)
 
