@@ -536,7 +536,7 @@ const resetAdminPassword = async (req, res) => {
         },
       }
     );
-    return res.send({ status: 1, msg: "รีเซ็ทรหัสผ่านสำเร็จ" });
+    return res.send({ status: 1, msg: "เปลี่ยนรหัสผ่านสำเร็จ" });
   } catch (err) {
     return res.status(500).send(err.message);
   }
@@ -896,70 +896,27 @@ const removeUserStatus = async (req, res) => {
   }
 };
 
-const getAdminLoginForm = async (req, res) => {
+const getAdminNav = async(req, res) => {
   try {
-    const data = await User.findAll({
-      attributes: ["user_id", "f_name", "l_name"],
-      order: [["f_name", "asc"]],
+    const user_id = res.locals.admin_id
+
+    let user = await User.findOne({
       where: {
-        user_role_id: 1,
+        user_id: user_id
       },
-    });
+      attributes: ['f_name', 'l_name', 'picture_url']
+    })
 
-    return res.send({ status: 1, data: data });
+    user.picture_url = USER_IMAGE_PATH + user.picture_url 
+
+    return res.send({ status: 1, data: user })
+
   } catch (err) {
-    return res.status(500).send(err.message);
+    return res.status(500).send(err.message)
   }
-};
+}
 
-const adminLogin = async (req, res) => {
-  try {
-    const user_id = req.body.user_id;
 
-    const user = await User.findOne({
-      where: {
-        user_id: user_id,
-        user_role_id: 1,
-      },
-      attributes: [
-        "f_name",
-        "l_name",
-        "picture_url",
-        "password",
-        "user_status_id",
-      ],
-    });
-
-    if (user) {
-      const check_password = bcrypt.compareSync(
-        req.body.password,
-        user.password
-      );
-
-      if (check_password) {
-        if (user.user_status_id == 1) {
-          const login_token = jwt.sign({ user_id: user_id }, JWT_SECRET, {
-            expiresIn: "2h",
-          });
-
-          return res.send({
-            status: 1,
-            msg: "เข้าสู่ระบบสำเร็จ",
-            token: login_token,
-          });
-        } else if (user.user_status_id == 2) {
-          return res.send({ status: 2, msg: "คุณถูกระงับการใช้งาน" });
-        }
-      } else {
-        return res.send({ status: 3, msg: "รหัสผ่านไม่ถูกต้อง" });
-      }
-    } else {
-      return res.send({ status: 4, msg: "ไม่มีผู้ดูแลในระบบ" })
-    }
-  } catch (err) {
-    return res.status(500).send(err.message);
-  }
-};
 
 module.exports = {
   createUser: createUser,
@@ -998,6 +955,5 @@ module.exports = {
   getUserStatus: getUserStatus,
   updateUserStatus: updateUserStatus,
   removeUserStatus: removeUserStatus,
-  getAdminLoginForm: getAdminLoginForm,
-  adminLogin: adminLogin,
+  getAdminNav: getAdminNav
 };

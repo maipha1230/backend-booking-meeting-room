@@ -10,4 +10,10 @@ router.get('/getUserLoginForm', userController.getUserLoginForm)
 router.post('/userLogin', userController.userLogin)
 
 
+//get admin login form
+router.get('/getAdminLoginForm', userController.getAdminLoginForm)
+
+router.post('/adminLogin', userController.adminLogin)
+
+
 module.exports = router

@@ -161,10 +161,6 @@ router.put('/updateUserStatus/:user_status_id', userController.updateUserStatus)
 //remove  user status
 router.delete('/removeUserStatus/:user_status_id', userController.removeUserStatus)
 
-//get admin login form
-router.get('/getAdminLoginForm', userController.getAdminLoginForm)
-
-router.post('/adminLogin', userController.adminLogin)
-
-
+//get admin navbar
+router.get('/getAdminNav', userController.getAdminNav)
 module.exports = router
