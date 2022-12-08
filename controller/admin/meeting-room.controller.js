@@ -400,7 +400,7 @@ const getMeetingRoomDeviceById = async(req, res) => {
 
 const updateMeetingRoomDevice = async (req, res) => {
   try {
-    const room_device_id = req.params.remove_device_id;
+    const room_device_id = req.params.room_device_id;
 
     if (req.body.gallery.length > 0) {
       let old_img = await MeetingRoomDevice.findOne({
