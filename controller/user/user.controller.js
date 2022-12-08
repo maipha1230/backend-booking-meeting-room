@@ -6,11 +6,15 @@ const {
     UserType,
     UserAffiliation,
     UserStatus,
+    MeetingRoom,
+    MeetingRoomGallery,
+    BookingPurpose,
+    MeetingRoomDevice
   } = require("../../model/index.model");
 
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt')
-const { USER_IMAGE_PATH, JWT_SECRET} = require('../../config/config')
+const { USER_IMAGE_PATH, JWT_SECRET, ROOM_IMAGE_PATH} = require('../../config/config')
 
 const getUserLoginForm = async(req, res) => {
     try {
@@ -143,6 +147,59 @@ const getUserLoginForm = async(req, res) => {
       return res.status(500).send(err.message);
     }
   };
+    const getRoomList = async(req, res) => {
+      try {
+        const room = await MeetingRoom.findAll({
+          attributes: ['room_name'],
+          include: [
+            {
+              model: MeetingRoomGallery,
+              attributes: ['img_path']
+            }
+          ]
+        })
+
+        const data = []
+
+        room.forEach((r) => {
+          let temp = {}
+          temp.room_name = r.room_name
+          temp.room_img = ROOM_IMAGE_PATH + r.room_galleries[0].img_path
+          data.push(temp)
+        })
+
+        return res.send({status: 1, data: data})
+
+      } catch (err) {
+        return res.status(500).send(err.message)
+      }
+    }
+
+    const getBookingPurposeList = async (req, res) => {
+      try {
+        const data = await BookingPurpose.findAll({
+          order: [['name', 'asc']]
+        })
+        return res.send({ status: 1, data: data })
+      } catch (err) {
+        return res.status(500).send(err.message)
+      }
+    }
+
+    const getRoomDeviceList = async (req, res) => {
+      try {
+        const data = await MeetingRoomDevice.findAll({
+          order: [['name', 'asc']]
+        })
+
+        return res.send({ status: 1, data: data})
+
+      } catch (err) {
+        return res.status(500).send(err.message)
+      }
+    }
+
+  
 
   
 
@@ -151,4 +208,7 @@ const getUserLoginForm = async(req, res) => {
     userLogin: userLogin,
     getAdminLoginForm: getAdminLoginForm,
     adminLogin: adminLogin,
+    getRoomList: getRoomList,
+    getBookingPurposeList: getBookingPurposeList,
+    getRoomDeviceList: getRoomDeviceList
   }

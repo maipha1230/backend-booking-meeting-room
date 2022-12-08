@@ -65,6 +65,24 @@ const resizeImagesUser = async (req, res, next) => {
     next();
   };
 
+const resizeImagesDevice = async (req, res, next) => {
+    if (!req.files) return next();
+    req.body.gallery = [];
+    // console.log(req.files);
+    await Promise.all(
+      req.files.map(async file => {
+        const newFilename = Date.now()+ Math.round(Math.random() * 1000) + ".jpg"; 
+        await sharp(file.buffer)
+          .resize(500, 500) // 3/2 aspect ration
+          .toFormat("jpeg")
+          .jpeg({ quality: 100 })
+          .toFile(`public/image/device/${newFilename}`);
+        req.body.gallery.push(newFilename);
+      })
+    );
+    next();
+  };
+
 
   const getResult = async (req, res, next) => {
     if (!req.body.gallery) {
@@ -81,5 +99,6 @@ const resizeImagesUser = async (req, res, next) => {
     uploadImages: uploadImages,
     resizeImagesMeetingRoom:resizeImagesMeetingRoom,
     resizeImagesUser: resizeImagesUser,
+    resizeImagesDevice: resizeImagesDevice,
     getResult: getResult
   };

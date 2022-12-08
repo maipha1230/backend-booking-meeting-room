@@ -13,7 +13,17 @@ router.post('/userLogin', userController.userLogin)
 //get admin login form
 router.get('/getAdminLoginForm', userController.getAdminLoginForm)
 
+//admin login
 router.post('/adminLogin', userController.adminLogin)
+
+//get room list
+router.get('/getRoomList', userController.getRoomList)
+
+//get booking purpose list
+router.get('/getBookingPurposeList', userController.getBookingPurposeList)
+
+//get room device list
+router.get('/getRoomDeviceList', userController.getRoomDeviceList)
 
 
 module.exports = router

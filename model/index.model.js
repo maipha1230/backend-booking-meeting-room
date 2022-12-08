@@ -24,6 +24,7 @@ db.MeetingRoom = require('./schema/meeting-room/meeting-room')(sequelize, Sequel
 db.MeetingRoomGallery = require('./schema/meeting-room/meeting-room-gallery')(sequelize, Sequelize)
 db.MeetingRoomStatus = require('./schema/meeting-room/meeting-room-status')(sequelize, Sequelize)
 db.MeetingRoomSize = require('./schema/meeting-room/meeting-room-size')(sequelize, Sequelize)
+db.MeetingRoomDevice = require('./schema/meeting-room/meeting-room-device')(sequelize, Sequelize)
 
 //create users schema
 db.User = require('./schema/users/users')(sequelize, Sequelize)
@@ -34,6 +35,8 @@ db.UserRank = require('./schema/users/user-rank')(sequelize, Sequelize)
 db.UserType = require('./schema/users/user-type')(sequelize, Sequelize)
 db.UserStatus = require('./schema/users/user-status')(sequelize, Sequelize)
 
+//create booking schema
+db.BookingPurpose = require('./schema/booking/booking-purpose')(sequelize, Sequelize)
 
 
 //meeting room relations

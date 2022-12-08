@@ -49,6 +49,20 @@ router.delete('/removeMeetingRoomStatus/:room_status_id', meetingRoomController.
 //update meeting room status
 router.put('/updateMeetingRoomStatus/:room_status_id', meetingRoomController.updateMeetingRoomStatus)
 
+//create room device
+router.post('/createMeetingRoomDevice', multer.uploadImages, multer.resizeImagesDevice, multer.getResult, meetingRoomController.createMeetingRoomDevice)
+
+//get meeting room device
+router.get('/getMeetingRoomDevice', meetingRoomController.getMeetingRoomDevice)
+
+//get room device by id
+router.get('/getMeetingRoomDeviceById/:room_device_id', meetingRoomController.getMeetingRoomDeviceById)
+
+//update room device
+router.put('/updateMeetingRoomDevice/:room_device_id',  multer.uploadImages, multer.resizeImagesDevice, multer.getResult, meetingRoomController.updateMeetingRoomDevice)
+
+//remove room device
+router.delete('/removeMeetingRoomDevice/:room_device_id', meetingRoomController.removeMeetingRoomDevice)
 
 
 ///////////////////// users  ////////////////////////
@@ -163,4 +177,6 @@ router.delete('/removeUserStatus/:user_status_id', userController.removeUserStat
 
 //get admin navbar
 router.get('/getAdminNav', userController.getAdminNav)
+
+
 module.exports = router
