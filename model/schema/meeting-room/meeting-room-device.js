@@ -13,10 +13,7 @@ module.exports = (sequelize, Sequelize) => {
         },
         img_path: {
           type: Sequelize.STRING
-        },
-        quantity: {
-          type: Sequelize.INTEGER,
-        },
+        }
       },
       {
         createdAt: false,

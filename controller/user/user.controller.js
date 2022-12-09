@@ -150,7 +150,7 @@ const getUserLoginForm = async(req, res) => {
     const getRoomList = async(req, res) => {
       try {
         const room = await MeetingRoom.findAll({
-          attributes: ['room_name'],
+          attributes: ['room_id','room_name'],
           include: [
             {
               model: MeetingRoomGallery,
@@ -163,6 +163,7 @@ const getUserLoginForm = async(req, res) => {
 
         room.forEach((r) => {
           let temp = {}
+          temp.room_id = r.room_id
           temp.room_name = r.room_name
           temp.room_img = ROOM_IMAGE_PATH + r.room_galleries[0].img_path
           data.push(temp)
@@ -188,11 +189,19 @@ const getUserLoginForm = async(req, res) => {
 
     const getRoomDeviceList = async (req, res) => {
       try {
-        const data = await MeetingRoomDevice.findAll({
-          order: [['name', 'asc']]
+        let data = await MeetingRoomDevice.findAll({
+          order: [['name', 'asc']],
+          attributes: ['room_device_id', 'name']
         })
-
-        return res.send({ status: 1, data: data})
+        let device = []
+        data.forEach((d) => {
+          device.push({
+            room_device_id: d.room_device_id,
+            name: d.name,
+            selected: false
+          })
+        })
+        return res.send({ status: 1, data: device})
 
       } catch (err) {
         return res.status(500).send(err.message)

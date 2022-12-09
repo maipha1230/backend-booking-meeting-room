@@ -356,7 +356,6 @@ const createMeetingRoomDevice = async (req, res) => {
     const create = await MeetingRoomDevice.create({
       name: req.body.name,
       img_path: req.body.gallery[0],
-      quantity: req.body.quantity,
     });
 
     return res.send({ status: 1, msg: "เพิ่มอุปกรณ์สำเร็จ" });
@@ -427,7 +426,6 @@ const updateMeetingRoomDevice = async (req, res) => {
       const update = await MeetingRoomDevice.update(
         {
           name: req.body.name,
-          quantity: req.body.quantity,
           img_path: req.body.gallery[0],
         },
         {
@@ -440,7 +438,6 @@ const updateMeetingRoomDevice = async (req, res) => {
       const update = await MeetingRoomDevice.update(
         {
           name: req.body.name,
-          quantity: req.body.quantity,
         },
         {
           where: {
