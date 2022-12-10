@@ -36,6 +36,8 @@ db.UserType = require('./schema/users/user-type')(sequelize, Sequelize)
 db.UserStatus = require('./schema/users/user-status')(sequelize, Sequelize)
 
 //create booking schema
+db.Booking = require('./schema/booking/booking')(sequelize, Sequelize)
+db.BookingDevice = require('./schema//booking/booking-device')(sequelize, Sequelize)
 db.BookingPurpose = require('./schema/booking/booking-purpose')(sequelize, Sequelize)
 
 
@@ -61,4 +63,16 @@ db.User.belongsTo(db.UserRole, { foreignKey: 'user_role_id' })
 db.UserStatus.hasOne(db.User, { foreignKey:  'user_status_id'})
 db.User.belongsTo(db.UserStatus, { foreignKey: 'user_status_id' })
 
+//booking relations
+db.User.hasMany(db.Booking, { foreignKey: 'user_id' })
+db.Booking.belongsTo(db.User, { foreignKey: 'user_id' })
+db.MeetingRoom.hasOne(db.Booking, { foreignKey: 'room_id' })
+db.Booking.belongsTo(db.MeetingRoom, { foreignKey: 'room_id' })
+db.BookingPurpose.hasOne(db.Booking, { foreignKey: 'booking_purpose_id' })
+db.Booking.belongsTo(db.BookingPurpose, { foreignKey: 'booking_purpose_id' })
+db.Booking.hasMany(db.BookingDevice, { foreignKey: 'booking_id' })
+db.BookingDevice.belongsTo(db.Booking, { foreignKey: 'booking_id' })
+db.MeetingRoomDevice.hasMany(db.BookingDevice, { foreignKey: 'room_device_id' })
+db.BookingDevice.belongsTo(db.MeetingRoomDevice, { foreignKey: 'room_device_id' })
+ 
 module.exports = db

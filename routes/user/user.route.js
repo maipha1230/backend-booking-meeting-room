@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const multer = require('../../services/upload-image/multer')
 const userController = require('../../controller/user/user.controller')
+const validator = require('../../services/validators/validator')
 
 //get user login form
 router.get('/getUserLoginForm', userController.getUserLoginForm)
@@ -24,6 +25,18 @@ router.get('/getBookingPurposeList', userController.getBookingPurposeList)
 
 //get room device list
 router.get('/getRoomDeviceList', userController.getRoomDeviceList)
+
+//user submit booking
+router.post('/userSubmitBooking', validator.userVerify, userController.userSubmitBooking)
+
+//user edit booking
+router.put('/userEditBooking/:booking_id', validator.userVerify, userController.userEditBooking)
+
+//user booking list
+router.get('/userBookingList', validator.userVerify, userController.userBookingList)
+
+//get user booking by id
+router.get('/getUserBookingById/:booking_id', validator.userVerify, userController.getUserBookingById)
 
 
 module.exports = router
