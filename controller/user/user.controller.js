@@ -464,6 +464,45 @@ const getUserBookingById = async(req, res) => {
   }
 }
 
+const userRemoveBooking = async(req, res) => {
+  try {
+    const booking_id = req.params.booking_id
+
+    const remove = await Booking.destroy({
+      where: {
+        booking_id: booking_id
+      }
+    })
+
+    return res.send({ status: 1, msg: "ยกเลิกการจองสำเร็จ" })
+
+  } catch (err) {
+    return res.status(500).send(err.message)
+  }
+}
+
+const checkUserOwnBooking = async(req, res) => {
+  try {
+    const user_id = res.locals.user_id
+    const booking_id = req.params.booking_id
+
+    const check = await Booking.findOne({
+      where: {
+        user_id: user_id,
+        booking_id: booking_id
+      }
+    })
+
+    if (check) {
+      return res.send({ status: 1 }) // own booking
+    } else {
+      return res.send({ status: 2 }) // not own booking
+    }
+  } catch (err) {
+    return res.status(500).send(err.message)
+  }
+}
+
 module.exports = {
   getUserLoginForm: getUserLoginForm,
   userLogin: userLogin,
@@ -475,5 +514,7 @@ module.exports = {
   userSubmitBooking: userSubmitBooking,
   userEditBooking: userEditBooking,
   userBookingList: userBookingList,
-  getUserBookingById: getUserBookingById
+  getUserBookingById: getUserBookingById,
+  userRemoveBooking: userRemoveBooking,
+  checkUserOwnBooking: checkUserOwnBooking
 };

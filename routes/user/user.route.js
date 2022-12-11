@@ -38,5 +38,11 @@ router.get('/userBookingList', validator.userVerify, userController.userBookingL
 //get user booking by id
 router.get('/getUserBookingById/:booking_id', validator.userVerify, userController.getUserBookingById)
 
+//user remove booking
+router.delete('/userRemoveBooking/:booking_id', validator.userVerify, userController.userRemoveBooking)
+
+//check user own booking
+router.get('/checkUserOwnBooking/:booking_id', validator.userVerify, userController.checkUserOwnBooking)
+
 
 module.exports = router
