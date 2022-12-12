@@ -44,5 +44,11 @@ router.delete('/userRemoveBooking/:booking_id', validator.userVerify, userContro
 //check user own booking
 router.get('/checkUserOwnBooking/:booking_id', validator.userVerify, userController.checkUserOwnBooking)
 
+//get meeting room list
+router.get('/getMeetingRoomList', userController.getMeetingRoomList)
+
+//get booking to calendar
+router.get('/getBookingToCalendar', userController.getBookingToCalendar)
+
 
 module.exports = router

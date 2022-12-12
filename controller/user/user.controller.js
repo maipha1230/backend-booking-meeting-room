@@ -12,6 +12,8 @@ const {
   MeetingRoomDevice,
   Booking,
   BookingDevice,
+  MeetingRoomSize,
+  MeetingRoomStatus,
 } = require("../../model/index.model");
 
 const jwt = require("jsonwebtoken");
@@ -503,6 +505,112 @@ const checkUserOwnBooking = async(req, res) => {
   }
 }
 
+const getMeetingRoomList = async(req ,res) => {
+  try {
+    const date = new Date()
+
+    let booking = await Booking.findAll({
+      where: {
+        date: date,
+        approve_status: 1
+      },
+    })
+
+    const isAvailable =  (room_id, booking) => {
+      booking.forEach((b) => {
+        console.log(room_id + '---' + b.room_id);
+        if (b.room_id == room_id) {
+          const getMinutes = s => {
+            const p = s.split(':').map(Number);
+            return p[0] * 60 + p[1];
+         };
+         const timeNow = date.getHours() * 60 + date.getMinutes()
+         console.log(timeNow >= getMinutes(b.time_start) &&  timeNow <= getMinutes(b.time_end));
+         return  (timeNow >= getMinutes(b.time_start) &&  timeNow <= getMinutes(b.time_end))
+        }
+        return false
+      })
+
+    }
+
+    let room = await MeetingRoom.findAll({
+      order: [['room_id', 'asc']],
+      include: [
+        {
+          model: MeetingRoomSize,
+          attributes: ['name']
+        },
+        {
+          model: MeetingRoomStatus,
+          attributes: ['name']
+        },
+        {
+          model: MeetingRoomGallery,
+          attributes: ['img_path']
+        }
+      ]
+    })
+
+    let data = []
+
+    room.forEach((r) => {
+      let temp = {}
+      temp.room_id = r.room_id
+      temp.room_name = r.room_name
+      temp.room_size = r.room_size.name
+      temp.room_capacity = r.room_capacity
+      temp.room_status = r.room_status.name
+      temp.gallery = []
+      r.room_galleries.forEach((g) => {
+        temp.gallery.push(ROOM_IMAGE_PATH + g.img_path)
+      })
+      data.push(temp)
+
+    })
+
+
+    return res.send({ status: 1, data: data })
+
+  } catch (err) {
+    return res.status(500).send(err.message)
+  }
+}
+
+const getBookingToCalendar = async (req ,res) => {
+  try {
+    
+    let booking = await Booking.findAll({
+      where: {
+        approve_status: 1
+      },
+      order: [['booking_id', 'asc']],
+      attributes: ['booking_id', 'date', 'time_start', 'time_end'],
+      include: [
+        {
+          model: MeetingRoom,
+          attributes: ['room_name']
+        }
+      ]
+    })
+
+    let data = []
+    booking.forEach((b) => {
+      let temp = {}
+      temp.id = b.booking_id
+      temp.title = b.room.room_name
+      temp.start = new Date(b.date +' '+b.time_start)
+      temp.end = new Date(b.date+' '+b.time_end)
+      temp.overlap = false;
+      data.push(temp)
+    })
+
+    return res.send({ status: 1, data: data })
+
+  } catch (err) {
+    return res.status(500).send(err.message)
+  }
+}
+
 module.exports = {
   getUserLoginForm: getUserLoginForm,
   userLogin: userLogin,
@@ -516,5 +624,7 @@ module.exports = {
   userBookingList: userBookingList,
   getUserBookingById: getUserBookingById,
   userRemoveBooking: userRemoveBooking,
-  checkUserOwnBooking: checkUserOwnBooking
+  checkUserOwnBooking: checkUserOwnBooking,
+  getMeetingRoomList: getMeetingRoomList,
+  getBookingToCalendar: getBookingToCalendar
 };
