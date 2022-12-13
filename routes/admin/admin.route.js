@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const meetingRoomController = require('../../controller/admin/meeting-room.controller')
 const userController = require('../../controller/admin/users.controller')
+const bookingController = require('../../controller/admin/booking.controller')
 const multer = require('../../services/upload-image/multer')
 
 //create meeting room
@@ -189,6 +190,10 @@ router.put('/updateLineNotify/:line_notify_id', userController.updateLineNotify)
 
 //remove line notify
 router.delete('/removeLineNotify/:line_notify_id', userController.removeLineNotify)
+
+/////////////////// booking /////////////////
+
+router.get('/getBookingList', bookingController.getBookingList)
 
 
 module.exports = router
