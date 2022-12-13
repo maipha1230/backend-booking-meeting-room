@@ -19,6 +19,9 @@ module.exports = (sequelize, Sequelize) => {
         },
         room_status_id: {
           type: Sequelize.INTEGER
+        },
+        room_color: {
+          type: Sequelize.STRING(10)
         }
       },
       {

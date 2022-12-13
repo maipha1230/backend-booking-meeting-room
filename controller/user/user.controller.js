@@ -14,6 +14,7 @@ const {
   BookingDevice,
   MeetingRoomSize,
   MeetingRoomStatus,
+  LineNotify,
 } = require("../../model/index.model");
 
 const jwt = require("jsonwebtoken");
@@ -277,7 +278,10 @@ const userSubmitBooking = async (req, res) => {
 
     const latest = await Booking.findOne({
       order: [['booking_id', 'desc']],
-      attributes: ['booking_id']
+      attributes: ['booking_id', 'date'],
+      include: [ 
+        { model: MeetingRoom, attributes: ['room_name'] },
+        { model: User, attributes: ['f_name', 'l_name'] } ]
     })
 
     const booking_id = latest.booking_id
@@ -297,7 +301,29 @@ const userSubmitBooking = async (req, res) => {
         room_device_id: null
       })
     }
-   
+
+    let token = await LineNotify.findOne({
+      order: [['line_notify_id', 'desc']]
+    })
+    console.log(token);
+    if (token) {
+      token = token.token
+      console.log(token);
+      const lineNotify = require("line-notify-nodejs")(
+      token 
+    );
+    
+    let msg = ""
+    msg += "แจ้งเตือนการจองห้องประชุม\n"
+    msg += `ห้องประชุม: ${latest.room.room_name}\n`
+    msg += `เรื่อง: ${req.body.title}\n`
+    msg += `ผู้จอง: ${latest.user.f_name} ${latest.user.l_name}\n`
+    msg += `วันที่: ${latest.date}\n`
+    msg += `เวลา: ${req.body.time_start} - ${req.body.time_end}\n`
+    msg += `ลิงค์การอนุมัติ: http://localhost:4200/admin/booking-room`
+    lineNotify.notify({message: msg})
+    }
+    
     return res.send({ status: 1, msg: "บันทึกการจองห้องประชุมสำเร็จ" })
     
   } catch (err) {
@@ -588,7 +614,7 @@ const getBookingToCalendar = async (req ,res) => {
       include: [
         {
           model: MeetingRoom,
-          attributes: ['room_name']
+          attributes: ['room_name', 'room_color']
         }
       ]
     })
@@ -600,7 +626,7 @@ const getBookingToCalendar = async (req ,res) => {
       temp.title = b.room.room_name
       temp.start = new Date(b.date +' '+b.time_start)
       temp.end = new Date(b.date+' '+b.time_end)
-      temp.overlap = false;
+      temp.backgroundColor = b.room.room_color
       data.push(temp)
     })
 

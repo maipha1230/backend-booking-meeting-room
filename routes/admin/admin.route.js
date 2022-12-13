@@ -178,5 +178,17 @@ router.delete('/removeUserStatus/:user_status_id', userController.removeUserStat
 //get admin navbar
 router.get('/getAdminNav', userController.getAdminNav)
 
+//create line notify
+router.post('/createLineNotify', userController.createLineNotify)
+
+//get line notify
+router.get('/getLineNotify', userController.getLineNotify)
+
+//update line notify
+router.put('/updateLineNotify/:line_notify_id', userController.updateLineNotify)
+
+//remove line notify
+router.delete('/removeLineNotify/:line_notify_id', userController.removeLineNotify)
+
 
 module.exports = router

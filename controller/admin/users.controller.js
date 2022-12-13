@@ -6,6 +6,7 @@ const {
   UserType,
   UserAffiliation,
   UserStatus,
+  LineNotify,
 } = require("../../model/index.model");
 const { USER_IMAGE_PATH, JWT_SECRET } = require("../../config/config");
 const bcrypt = require("bcrypt");
@@ -916,6 +917,67 @@ const getAdminNav = async(req, res) => {
   }
 }
 
+const createLineNotify = async(req ,res) => {
+  try {
+
+    const count = await LineNotify.count()
+
+    if (count >= 1) {
+      return res.send({ status: 2, msg: "โทเคนการแจ้งเตือนไลน์สามารถมีได้แค่โทเคนเดียว" })
+    }
+
+    const create = await LineNotify.create({
+      token: req.body.token
+    })
+    return res.send({ status: 1, msg: "เพิ่มโทเคนการแจ้งเตือนไลน์สำเร็จ" })
+  } catch (err) {
+    return res.status(500).send(err.message)
+  }
+}
+
+const getLineNotify = async(req, res) => {
+  try {
+    const line = await LineNotify.findAll({
+      order: [['line_notify_id', 'asc']]
+    })
+    return res.send({ status: 1, data: line })
+  } catch (err) {
+    return res.status(500).send(err.message)
+  }
+}
+
+const updateLineNotify = async(req, res) => {
+  try {
+    const line_notify_id = req.params.line_notify_id
+
+    const update = await LineNotify.update({
+      token: req.body.token
+    },
+    {
+      where: {
+        line_notify_id: line_notify_id
+      }
+    })
+    return res.send({ status: 1, msg: "แก้ไขโทเคนการแจ้งเตือนไลน์สำเร็จ" })
+  } catch (err) {
+    return res.status(500).send(err.message)
+  }
+}
+
+const removeLineNotify = async(req, res) => {
+  try {
+    const line_notify_id = req.params.line_notify_id
+
+    const remove = await LineNotify.destroy({
+      where: {
+        line_notify_id: line_notify_id
+      }
+    })
+    return res.send({ status: 1, msg: "ลบโทเคนการแจ้งเตือนไลน์สำเร็จ" })
+  } catch (err) {
+    return res.status(500).send(err.message)
+  }
+}
 
 
 module.exports = {
@@ -955,5 +1017,9 @@ module.exports = {
   getUserStatus: getUserStatus,
   updateUserStatus: updateUserStatus,
   removeUserStatus: removeUserStatus,
-  getAdminNav: getAdminNav
+  getAdminNav: getAdminNav,
+  createLineNotify: createLineNotify,
+  getLineNotify: getLineNotify,
+  updateLineNotify: updateLineNotify,
+  removeLineNotify: removeLineNotify
 };

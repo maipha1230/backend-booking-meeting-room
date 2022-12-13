@@ -16,6 +16,7 @@ const createMeetingRoom = async (req, res) => {
       room_size_id: req.body.room_size_id,
       room_capacity: req.body.room_capacity,
       room_status_id: req.body.room_status_id,
+      room_color: req.body.room_color
     });
 
     if (req.body.gallery) {
@@ -73,6 +74,7 @@ const getMeetingRoom = async (req, res) => {
       temp.room_capacity = item.room_capacity;
       temp.room_status_id = item.room_status_id;
       temp.room_status = item.room_status.name;
+      temp.room_color = item.room_color;
       temp.room_gallery = [];
       item.room_galleries.reverse();
       item.room_galleries.forEach((img) => {
@@ -122,6 +124,7 @@ const getMeetingRoomById = async (req, res) => {
     data.room_size_id = room.room_size_id;
     data.room_status_id = room.room_status_id;
     data.room_capacity = room.room_capacity;
+    data.room_color = room.room_color;
     data.room_gallery = [];
     room.room_galleries.forEach((item) => {
       data.room_gallery.push({
@@ -145,6 +148,7 @@ const updateMeetingRoom = async (req, res) => {
         room_size_id: req.body.room_size_id,
         room_capacity: req.body.room_capacity,
         room_status_id: req.body.room_status_id,
+        room_color: req.body.room_color
       },
       {
         where: {

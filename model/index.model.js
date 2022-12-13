@@ -40,6 +40,9 @@ db.Booking = require('./schema/booking/booking')(sequelize, Sequelize)
 db.BookingDevice = require('./schema//booking/booking-device')(sequelize, Sequelize)
 db.BookingPurpose = require('./schema/booking/booking-purpose')(sequelize, Sequelize)
 
+//create line notify schema
+db.LineNotify = require('./schema/line-notify/line-notify')(sequelize, Sequelize)
+
 
 //meeting room relations
 db.MeetingRoom.hasMany(db.MeetingRoomGallery, { foreignKey: 'room_id' })
@@ -75,4 +78,5 @@ db.BookingDevice.belongsTo(db.Booking, { foreignKey: 'booking_id' })
 db.MeetingRoomDevice.hasMany(db.BookingDevice, { foreignKey: 'room_device_id' })
 db.BookingDevice.belongsTo(db.MeetingRoomDevice, { foreignKey: 'room_device_id' })
  
+
 module.exports = db
