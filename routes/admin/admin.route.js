@@ -193,7 +193,14 @@ router.delete('/removeLineNotify/:line_notify_id', userController.removeLineNoti
 
 /////////////////// booking /////////////////
 
-router.get('/getBookingList', bookingController.getBookingList)
+//get booking list to admin page
+router.post('/getBookingList', bookingController.getBookingList)
+
+//get booking by id for detail 
+router.get('/getBookingById/:booking_id', bookingController.getBookingById)
+
+//booking permission
+router.put('/bookingPermission/:booking_id', bookingController.bookingPermission)
 
 
 module.exports = router

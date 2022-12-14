@@ -540,24 +540,8 @@ const getMeetingRoomList = async(req ,res) => {
         date: date,
         approve_status: 1
       },
+      order: [['time_start', 'asc']]
     })
-
-    const isAvailable =  (room_id, booking) => {
-      booking.forEach((b) => {
-        console.log(room_id + '---' + b.room_id);
-        if (b.room_id == room_id) {
-          const getMinutes = s => {
-            const p = s.split(':').map(Number);
-            return p[0] * 60 + p[1];
-         };
-         const timeNow = date.getHours() * 60 + date.getMinutes()
-         console.log(timeNow >= getMinutes(b.time_start) &&  timeNow <= getMinutes(b.time_end));
-         return  (timeNow >= getMinutes(b.time_start) &&  timeNow <= getMinutes(b.time_end))
-        }
-        return false
-      })
-
-    }
 
     let room = await MeetingRoom.findAll({
       order: [['room_id', 'asc']],
@@ -590,9 +574,21 @@ const getMeetingRoomList = async(req ,res) => {
       r.room_galleries.forEach((g) => {
         temp.gallery.push(ROOM_IMAGE_PATH + g.img_path)
       })
+      let available = []
+      booking.forEach((b) => {
+        if (r.room_id == b.room_id){
+          let dateNow = new Date()
+          let start = new Date(b.date +' '+b.time_start)
+          let end = new Date(b.date+ ' '+ b.time_end)
+          available.push(start <= dateNow && dateNow <= end)
+        }
+      })
+      temp.room_available = !available.some((a) => a == true)
       data.push(temp)
 
     })
+
+    
 
 
     return res.send({ status: 1, data: data })
@@ -627,6 +623,7 @@ const getBookingToCalendar = async (req ,res) => {
       temp.start = new Date(b.date +' '+b.time_start)
       temp.end = new Date(b.date+' '+b.time_end)
       temp.backgroundColor = b.room.room_color
+      temp.borderColor = b.room.room_color
       data.push(temp)
     })
 
