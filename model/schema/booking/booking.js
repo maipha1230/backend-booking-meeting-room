@@ -32,13 +32,17 @@ module.exports = (sequelize, Sequelize) => {
         time_end: {
           type: Sequelize.STRING(10)
         },
+        link: {
+          type: Sequelize.TEXT
+        },
         approve_status: {
           type: Sequelize.INTEGER(1)
-        }
-        /*status 0 is for no check yet
+          /*status 0 is for no check yet
           status 1 is for approve
           status 2 is for no approve
         */
+        },
+        
       },
       {
         createdAt: true,

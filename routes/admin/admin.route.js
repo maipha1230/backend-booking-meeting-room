@@ -205,5 +205,8 @@ router.put('/bookingPermission/:booking_id', bookingController.bookingPermission
 //booking edit by id
 router.get('/getEditBookingById/:booking_id', bookingController.getEditBookingById)
 
+//admin edit booking
+router.put('/adminUpdateBooking/:booking_id', bookingController.adminUpdateBooking)
+
 
 module.exports = router

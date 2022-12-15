@@ -273,6 +273,7 @@ const userSubmitBooking = async (req, res) => {
       date: req.body.date,
       time_start: req.body.time_start,
       time_end: req.body.time_end,
+      link: req.body.link,
       approve_status: 0
     })
 
@@ -381,6 +382,7 @@ const userEditBooking = async(req, res) => {
       date: req.body.date,
       time_start: req.body.time_start,
       time_end: req.body.time_end,
+      link: req.body.link
     },
     {
       where: {
@@ -482,6 +484,7 @@ const getUserBookingById = async(req, res) => {
       date: booking.date,
       time_start: booking.time_start,
       time_end: booking.time_end,
+      link: booking.link,
       device: booking.booking_devices
     }
 

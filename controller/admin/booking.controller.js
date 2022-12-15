@@ -71,7 +71,7 @@ const {
             where: {
                 booking_id: booking_id
             },
-            attributes: ['title', 'quantity', 'date', 'time_start', 'time_end', 'createdAt'],
+            attributes: ['title', 'quantity', 'date', 'time_start', 'time_end', 'link', 'createdAt'],
             include: [
                 {
                     model: BookingPurpose,
@@ -137,6 +137,7 @@ const {
         booking.time_end = temp.time_end
         booking.createdAt = temp.createdAt
         booking.purpose = temp.booking_purpose.name
+        booking.link = temp.link
         booking.device = []
         temp.booking_devices.forEach((device) => {
             booking.device.push(device.room_device.name)
@@ -190,7 +191,8 @@ const {
                 'quantity',
                 'date',
                 'time_start',
-                'time_end'
+                'time_end',
+                'link'
             ],
             include: [
                 {
@@ -209,6 +211,7 @@ const {
         data.date = booking.date
         data.time_start = booking.time_start
         data.time_end = booking.time_end
+        data.link = booking.link
         data.device = []
         booking.booking_devices.forEach((device) => {
             data.device.push(device.room_device_id)
@@ -241,9 +244,96 @@ const {
     }
   }
 
+  const adminUpdateBooking = async(req ,res) => {
+    try {
+        const booking_id = req.params.booking_id
+
+        const booked = await Booking.findAll({
+            where: {
+              date: req.body.date,
+              room_id: req.body.room,
+              approve_status: 1
+            },
+            attributes: ['time_start', 'time_end'],
+            order: [['time_start', 'asc']]
+          })
+          
+          const time = {
+            time_start: req.body.time_start,
+            time_end: req.body.time_end
+          }
+      
+        const overlapping = (a, b) => {
+            const getMinutes = s => {
+               const p = s.split(':').map(Number);
+               return p[0] * 60 + p[1];
+            };
+            return getMinutes(a.time_end) > getMinutes(b.time_start) && getMinutes(b.time_end) > getMinutes(a.time_start);
+         };
+      
+         const isOverlapping = (arr) => {
+            for (let i = 0; i < arr.length; i++) {
+              if (overlapping(time, arr[i])) {
+                return true;
+             }
+            };
+            return false;
+         };
+         if (booked) {
+          if (isOverlapping(booked)) {
+            return res.send({ status: 2, msg: "เวลาที่คุณจองมีการจองอยู่แล้ว", booked: booked })
+          }
+         }
+
+        const update = await Booking.update({
+            title: req.body.title,
+            room_id: req.body.room,
+            booking_purpose_id: req.body.purpose,
+            quantity: req.body.quantity,
+            date: req.body.date,
+            time_start: req.body.time_start,
+            time_end: req.body.time_end,
+            link: req.body.link
+        }, {
+            where: {
+                booking_id: booking_id
+            }
+        })
+
+        const remove_old_device = await BookingDevice.destroy({
+            where: {
+              booking_id: booking_id
+            }
+          })
+      
+          if (req.body.device.length > 0) {
+            let device = []
+            for (let i = 0; i < req.body.device.length ; i++) {
+              device.push({
+                booking_id: booking_id,
+                room_device_id: req.body.device[i].room_device_id
+              })
+            }
+            const booking_device = await BookingDevice.bulkCreate(device)
+          } else {
+            const booking_device = await BookingDevice.create({
+              booking_id: booking_id,
+              room_device_id: null
+            })
+          }
+
+          return res.send({ status: 1, msg: "แก้ไขคำร้องสำเร็จ" })
+
+    } catch (err) {
+        return res.status(500).send(err.message)
+    }
+
+  }
+
   module.exports = {
     getBookingList: getBookingList,
     getBookingById: getBookingById,
     bookingPermission: bookingPermission,
-    getEditBookingById: getEditBookingById
+    getEditBookingById: getEditBookingById,
+    adminUpdateBooking: adminUpdateBooking
   }
