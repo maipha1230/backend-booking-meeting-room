@@ -174,6 +174,53 @@ const {
     }
   }
 
+  const getEditBookingById = async(req, res) => {
+    try {
+        const booking_id  = req.params.booking_id
+
+        let booking = await Booking.findOne({
+            where: {
+                booking_id: booking_id
+            },
+            attributes: [
+                'booking_id', 
+                'room_id',
+                'booking_purpose_id',
+                'title',
+                'quantity',
+                'date',
+                'time_start',
+                'time_end'
+            ],
+            include: [
+                {
+                    model: BookingDevice,
+                    attributes: ['room_device_id']
+                }
+            ]
+        })
+
+        let data = {}
+        data.booking_id = booking.booking_id
+        data.room = booking.room_id
+        data.title = booking.title
+        data.purpose = booking.booking_purpose_id
+        data.quantity = booking.quantity
+        data.date = booking.date
+        data.time_start = booking.time_start
+        data.time_end = booking.time_end
+        data.device = []
+        booking.booking_devices.forEach((device) => {
+            data.device.push(device.room_device_id)
+        })
+
+        return res.send({ status:1 , data: data })
+
+    } catch (err) {
+        return res.status(500).send(err.message)
+    }
+  }
+
   const bookingPermission = async (req, res) => {
     try {
         const booking_id = req.params.booking_id
@@ -197,5 +244,6 @@ const {
   module.exports = {
     getBookingList: getBookingList,
     getBookingById: getBookingById,
-    bookingPermission: bookingPermission
+    bookingPermission: bookingPermission,
+    getEditBookingById: getEditBookingById
   }
