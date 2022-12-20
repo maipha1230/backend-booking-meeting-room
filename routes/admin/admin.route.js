@@ -3,6 +3,7 @@ const router = express.Router()
 const meetingRoomController = require('../../controller/admin/meeting-room.controller')
 const userController = require('../../controller/admin/users.controller')
 const bookingController = require('../../controller/admin/booking.controller')
+const dashboardController = require('../../controller/admin/dashboard.controller')
 const multer = require('../../services/upload-image/multer')
 
 //create meeting room
@@ -207,6 +208,18 @@ router.get('/getEditBookingById/:booking_id', bookingController.getEditBookingBy
 
 //admin edit booking
 router.put('/adminUpdateBooking/:booking_id', bookingController.adminUpdateBooking)
+
+////////////////////// dashboard ///////////////
+
+router.get('/getBookingsOverview', dashboardController.getBookingsOverview)
+
+router.get('/getUserOverview', dashboardController.getUserOverview)
+
+router.get('/getAdminOverview', dashboardController.getAdminOverview)
+
+router.get('/getRoomTime', dashboardController.getRoomTime)
+
+router.get('/getAffiliationChart', dashboardController.getAffiliationChart)
 
 
 module.exports = router
