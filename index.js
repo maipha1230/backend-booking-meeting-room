@@ -24,11 +24,11 @@ db.sequelize.sync();
 //     return res.send('Welcome to api')
 // })
 
-app.get('/', (req, res) => {
+app.use('/api', require('./routes/index.route'))
+
+app.get('*', (req, res) => {
     res.sendFile(path.join(distPath, 'index.html'));
   });
-
-app.use('/api', require('./routes/index.route'))
 
 app.listen(PORT || 3000, () => {
     console.log('server is running on port: 3000');
