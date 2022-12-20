@@ -24,7 +24,7 @@ db.sequelize.sync();
 //     return res.send('Welcome to api')
 // })
 
-app.get('/*', (req, res) => {
+app.get('/', (req, res) => {
     res.sendFile(path.join(distPath, 'index.html'));
   });
 
