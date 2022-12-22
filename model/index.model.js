@@ -1,13 +1,13 @@
 const Sequelize = require('sequelize')
-
+const { DATABASE_HOST, DATABASE_PASSWORD, DATABASE_NAME, DATABASE_PASSWORD } = require('../config/config')
 const sequelize = new Sequelize(
-    'booking-meeting-room',//database
-    'root',//user
-    '',//password 
+    DATABASE_HOST,//database
+    DATABASE_USER,//user
+    DATABASE_PASSWORD,//password 
     {//config
   
         dialect: 'mysql',
-        host: '127.0.0.1',
+        host: DATABASE_HOST,
         charset: 'utf8',
         collate: 'utf8_general_ci',
         operatorsAliases:0,

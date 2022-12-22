@@ -4,8 +4,8 @@ const cors = require('cors')
 const path = require('path')
 const { PORT} = require('./config/config')
 app.use(cors())
-app.use(express.json({ extended: false }))
-app.use(express.urlencoded({ extended: true }))
+app.use(express.json({ extended: false, limit: '500mb' }))
+app.use(express.urlencoded({ extended: true, limit: '500mb' }))
 
 
 //use express static folder
