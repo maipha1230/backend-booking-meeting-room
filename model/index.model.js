@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize')
-const { DATABASE_HOST, DATABASE_PASSWORD, DATABASE_NAME, DATABASE_PASSWORD } = require('../config/config')
+const { DATABASE_HOST, DATABASE_NAME, DATABASE_PASSWORD, DATABASE_USER } = require('../config/config')
 const sequelize = new Sequelize(
-    DATABASE_HOST,//database
+    DATABASE_NAME,//database
     DATABASE_USER,//user
     DATABASE_PASSWORD,//password 
     {//config
