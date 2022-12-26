@@ -29,21 +29,31 @@ const userStatus = require("../../model/schema/users/user-status");
 
 const getBookingsOverview = async(req ,res) => {
   try {
-    let booking = await sequelize.query(
-      `
-      SELECT bookings.approve_status as approve_status, COUNT(*) as count 
-      FROM bookings
-      GROUP BY bookings.approve_status
-      `
-    )
+   let totalCount = await Booking.count()
 
-    booking = booking[0]
-    let total = 0
-    booking.forEach((b) => {
-      total += b.count
-    })
+   let booking_wait_count = await Booking.count({
+    where: {
+      approve_status: 0
+    }
+   })
+   let booking_approve_count = await Booking.count({
+    where: {
+      approve_status: 1
+    }
+   })
+   let booking_refuse_count = await Booking.count({
+    where: {
+      approve_status: 2
+    }
+   })
+
+   let booking = []
+   booking.push(booking_wait_count)
+   booking.push(booking_approve_count)
+   booking.push(booking_refuse_count)
+
     
-    return res.send({ status: 1, data: booking, total: total })
+    return res.send({ status: 1, data: booking, total: totalCount })
   } catch (err) {
     return res.status(500).send(err.message)
   }
