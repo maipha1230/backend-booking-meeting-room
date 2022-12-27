@@ -232,6 +232,7 @@ const {
 
   const bookingPermission = async (req, res) => {
     try {
+        const admin_id = res.locals.admin_id
         const booking_id = req.params.booking_id
         const permit = req.body.permit
 
@@ -243,6 +244,59 @@ const {
             }
         })
 
+        const admin = await User.findOne({
+            where: {
+                user_id: admin_id
+            },
+            attributes: ['f_name', 'l_name']
+          })
+
+          const latest = await Booking.findOne({
+            where: {
+                booking_id: booking_id
+            },
+            order: [['booking_id', 'desc']],
+            attributes: ['booking_id', 'date'],
+            include: [ 
+              { model: MeetingRoom, attributes: ['room_name'] },
+              { model: User, attributes: ['f_name', 'l_name'] } ]
+          })
+
+          let token = await LineNotify.findOne({
+            order: [['line_notify_id', 'desc']]
+          })
+          if (token) {
+            token = token.token
+            const lineNotify = require("line-notify-nodejs")(
+            token 
+          );
+          let msg = "\n"
+          if (permit == 1) {
+            msg += "แจ้งเตือนการจองห้องประชุม\n"
+            msg += "(ผ่านการอนุมัติ)\n"
+            msg += `ยืนยันโดยผู้ดูแลระบบ(${admin.f_name} ${admin.l_name})\n`
+            msg += `ห้องประชุม: ${latest.room.room_name}\n`
+            msg += `เรื่อง: ${req.body.title}\n`
+            msg += `ผู้จอง: ${latest.user.f_name} ${latest.user.l_name}\n`
+            msg += `วันที่: ${latest.date}\n`
+            msg += `เวลา: ${req.body.time_start} - ${req.body.time_end}\n`
+            msg += `ลิงค์การอนุมัติ: http://localhost:4200/admin/booking-room`
+          } else if (permit == 2) {
+            msg += "แจ้งเตือนการจองห้องประชุม\n"
+            msg += "(ไม่ผ่านผ่านการอนุมัติ)\n"
+            msg += `ถูกแก้ไขโดยผู้ดูแลระบบ(${admin.f_name} ${admin.l_name})\n`
+            msg += `ห้องประชุม: ${latest.room.room_name}\n`
+            msg += `เรื่อง: ${req.body.title}\n`
+            msg += `ผู้จอง: ${latest.user.f_name} ${latest.user.l_name}\n`
+            msg += `วันที่: ${latest.date}\n`
+            msg += `เวลา: ${req.body.time_start} - ${req.body.time_end}\n`
+            msg += `ลิงค์การอนุมัติ: http://localhost:4200/admin/booking-room`
+          }
+          lineNotify.notify({message: msg})
+          }
+
+        
+
         return res.send({ status: 1, msg: "บันทึกการอนุญาตคำร้องสำเร็จ" })
 
     } catch (err) {
@@ -252,8 +306,10 @@ const {
 
   const adminUpdateBooking = async(req ,res) => {
     try {
-        const booking_id = req.params.booking_id
 
+        const admin_id = res.locals.admin_id
+        const booking_id = req.params.booking_id
+        
         const booked = await Booking.findAll({
             where: {
               date: req.body.date,
@@ -327,6 +383,47 @@ const {
               room_device_id: null
             })
           }
+
+
+          const admin = await User.findOne({
+            where: {
+                user_id: admin_id
+            },
+            attributes: ['f_name', 'l_name']
+          })
+
+          const latest = await Booking.findOne({
+            where: {
+                booking_id: booking_id
+            },
+            order: [['booking_id', 'desc']],
+            attributes: ['booking_id', 'date'],
+            include: [ 
+              { model: MeetingRoom, attributes: ['room_name'] },
+              { model: User, attributes: ['f_name', 'l_name'] } ]
+          })
+
+          let token = await LineNotify.findOne({
+            order: [['line_notify_id', 'desc']]
+          })
+          if (token) {
+            token = token.token
+            const lineNotify = require("line-notify-nodejs")(
+            token 
+          );
+          
+          let msg = ""
+          msg += "แจ้งเตือนการจองห้องประชุม\n"
+          msg += `ถูกแก้ไขโดยผู้ดูแลระบบ(${admin.f_name} ${admin.l_name})\n`
+          msg += `ห้องประชุม: ${latest.room.room_name}\n`
+          msg += `เรื่อง: ${req.body.title}\n`
+          msg += `ผู้จอง: ${latest.user.f_name} ${latest.user.l_name}\n`
+          msg += `วันที่: ${latest.date}\n`
+          msg += `เวลา: ${req.body.time_start} - ${req.body.time_end}\n`
+          msg += `ลิงค์การอนุมัติ: http://localhost:4200/admin/booking-room`
+          lineNotify.notify({message: msg})
+          }
+
 
           return res.send({ status: 1, msg: "แก้ไขคำร้องสำเร็จ" })
 
