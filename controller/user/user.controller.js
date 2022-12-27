@@ -314,7 +314,7 @@ const userSubmitBooking = async (req, res) => {
       token 
     );
     
-    let msg = ""
+    let msg = "\n"
     msg += "แจ้งเตือนการจองห้องประชุม\n"
     msg += `ห้องประชุม: ${latest.room.room_name}\n`
     msg += `เรื่อง: ${req.body.title}\n`
@@ -411,6 +411,37 @@ const userEditBooking = async(req, res) => {
         room_device_id: null
       })
     }
+
+    const latest = await Booking.findOne({
+      where: { 
+        booking_id: booking_id
+       },
+      order: [['booking_id', 'desc']],
+      attributes: ['booking_id', 'date'],
+      include: [ 
+        { model: MeetingRoom, attributes: ['room_name'] },
+        { model: User, attributes: ['f_name', 'l_name'] } ]
+    })
+
+    let token = await LineNotify.findOne({
+      order: [['line_notify_id', 'desc']]
+    })
+    if (token) {
+      token = token.token
+      const lineNotify = require("line-notify-nodejs")(
+      token 
+    );
+    
+    let msg = "\n"
+    msg += "แจ้งเตือนการจองห้องประชุม ถูกแก้ไขโดยผู้จอง\n"
+    msg += `ห้องประชุม: ${latest.room.room_name}\n`
+    msg += `เรื่อง: ${req.body.title}\n`
+    msg += `ผู้จอง: ${latest.user.f_name} ${latest.user.l_name}\n`
+    msg += `วันที่: ${latest.date}\n`
+    msg += `เวลา: ${req.body.time_start} - ${req.body.time_end}\n`
+    msg += `ลิงค์การอนุมัติ: http://localhost:4200/admin/booking-room`
+    lineNotify.notify({message: msg})
+    }
    
     return res.send({ status: 1, msg: "แก้ไขการจองห้องประชุมสำเร็จ" })
 
@@ -499,11 +530,44 @@ const userRemoveBooking = async(req, res) => {
   try {
     const booking_id = req.params.booking_id
 
+    const latest = await Booking.findOne({
+      where: {
+        booking_id: booking_id
+      },
+      order: [['booking_id', 'desc']],
+      attributes: ['booking_id', 'date'],
+      include: [ 
+        { model: MeetingRoom, attributes: ['room_name'] },
+        { model: User, attributes: ['f_name', 'l_name'] } ]
+    })
+
     const remove = await Booking.destroy({
       where: {
         booking_id: booking_id
       }
     })
+
+    let token = await LineNotify.findOne({
+      order: [['line_notify_id', 'desc']]
+    })
+    console.log(token);
+    if (token) {
+      token = token.token
+      console.log(token);
+      const lineNotify = require("line-notify-nodejs")(
+      token 
+    );
+    
+    let msg = "\n"
+    msg += "แจ้งเตือนการจองห้องประชุม ถูกยกเลิกโดยผู้จอง\n"
+    msg += `ห้องประชุม: ${latest.room.room_name}\n`
+    msg += `เรื่อง: ${req.body.title}\n`
+    msg += `ผู้จอง: ${latest.user.f_name} ${latest.user.l_name}\n`
+    msg += `วันที่: ${latest.date}\n`
+    msg += `เวลา: ${req.body.time_start} - ${req.body.time_end}\n`
+    msg += `ลิงค์การอนุมัติ: http://localhost:4200/admin/booking-room`
+    lineNotify.notify({message: msg})
+    }
 
     return res.send({ status: 1, msg: "ยกเลิกการจองสำเร็จ" })
 

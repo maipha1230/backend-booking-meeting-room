@@ -557,7 +557,7 @@ const createUserRole = async (req, res) => {
 const getUserRole = async (req, res) => {
   try {
     const data = await UserRole.findAll({
-      order: [['user_role_name', 'asc']]
+      order: [['user_role_id', 'asc']]
     });
     return res.send({ status: 1, data: data });
   } catch (err) {
@@ -620,7 +620,7 @@ const createUserPosition = async (req, res) => {
 const getUserPosition = async (req, res) => {
   try {
     const data = await UserPosition.findAll({
-      order: [['user_position_name', 'asc']]
+      order: [['user_position_id', 'asc']]
     });
     return res.send({ status: 1, data: data });
   } catch (err) {
@@ -631,6 +631,10 @@ const getUserPosition = async (req, res) => {
 const updateUserPosition = async (req, res) => {
   try {
     const user_position_id = req.params.user_position_id;
+
+    if (user_position_id == 1) {
+      return res.send({ status: 2, msg: "ไม่สามารถแก้ไขตำแหน่งนี้ได้" })
+    }
 
     const update = await UserPosition.update(
       {
@@ -652,6 +656,18 @@ const removeUserPosition = async (req, res) => {
   try {
     const user_position_id = req.params.user_position_id;
 
+    if (user_position_id == 1) {
+      return res.send({ status: 2, msg: 'ไม่สามารถลบตำแหน่งนี้ได้' })
+    }
+
+    const updateUser = await User.update({
+      user_position_id: 1
+    },{
+      where: {
+        user_position_id: user_position_id
+      }
+    })
+
     const remove = await UserPosition.destroy({
       where: {
         user_position_id: user_position_id,
@@ -668,7 +684,7 @@ const createUserAffiliation = async (req, res) => {
     const create = await UserAffiliation.create({
       user_affiliation_name: req.body.name,
     });
-    return res.send({ status: 1, msg: "เพิ่มสังกัดผู้ใช้งานสำเร็จ" });
+    return res.send({ status: 1, msg: "เพิ่มแผนกผู้ใช้งานสำเร็จ" });
   } catch (err) {
     return res.status(500).send(err.message);
   }
@@ -677,7 +693,7 @@ const createUserAffiliation = async (req, res) => {
 const getUserAffiliation = async (req, res) => {
   try {
     const data = await UserAffiliation.findAll({
-      order: [['user_affiliation_name', 'asc']]
+      order: [['user_affiliation_id', 'asc']]
     });
     return res.send({ status: 1, data: data });
   } catch (err) {
@@ -689,6 +705,10 @@ const updateUserAffiliation = async (req, res) => {
   try {
     const user_affiliation_id = req.params.user_affiliation_id;
 
+    if (user_affiliation_id == 1) {
+      return res.send({ status: 2, msg: "ไม่สามารถแก้ไขแผนกนี้ได้" })
+    }
+
     const update = await UserAffiliation.update(
       {
         user_affiliation_name: req.body.name,
@@ -699,7 +719,7 @@ const updateUserAffiliation = async (req, res) => {
         },
       }
     );
-    return res.send({ status: 1, msg: "แก้ไขสังกัดผู้ใช้งานสำเร็จ" });
+    return res.send({ status: 1, msg: "แก้ไขแผนกผู้ใช้งานสำเร็จ" });
   } catch (err) {
     return res.status(500).send(err.message);
   }
@@ -708,6 +728,18 @@ const updateUserAffiliation = async (req, res) => {
 const removeUserAffiliation = async (req, res) => {
   try {
     const user_affiliation_id = req.params.user_affiliation_id;
+
+    if (user_affiliation_id == 1) {
+      return res.send({ status: 2, msg: 'ไม่สามารถลบแผนกนี้ได้' })
+    }
+
+    const updateUser = await User.update({
+      user_affiliation_id: 1
+    },{
+      where: {
+        user_affiliation_id: user_affiliation_id
+      }
+    })
 
     const remove = await UserAffiliation.destroy({
       where: {
@@ -734,7 +766,7 @@ const createUserRank = async (req, res) => {
 const getUserRank = async (req, res) => {
   try {
     const data = await UserRank.findAll({
-      order: [['user_rank_name', 'asc']]
+      order: [['user_rank_id', 'asc']]
     });
     return res.send({ status: 1, data: data });
   } catch (err) {
@@ -745,6 +777,10 @@ const getUserRank = async (req, res) => {
 const updateUserRank = async (req, res) => {
   try {
     const user_rank_id = req.params.user_rank_id;
+
+    if (user_rank_id == 1) {
+      return res.send({ status: 2, msg: "ไม่สามารถแก้ไขระดับนี้ได้" })
+    }
 
     const update = await UserRank.update(
       {
@@ -765,6 +801,18 @@ const updateUserRank = async (req, res) => {
 const removeUserRank = async (req, res) => {
   try {
     const user_rank_id = req.params.user_rank_id;
+
+    if (user_rank_id == 1) {
+      return res.send({ status: 2, msg: 'ไม่สามารถลบระดับนี้ได้' })
+    }
+
+    const updateUser = await User.update({
+      user_rank_id: 1
+    },{
+      where: {
+        user_rank_id: user_rank_id
+      }
+    })
 
     const remove = await UserRank.destroy({
       where: {
@@ -791,7 +839,7 @@ const createUserType = async (req, res) => {
 const getUserType = async (req, res) => {
   try {
     const data = await UserType.findAll({
-      order: [['user_type_name', 'asc']]
+      order: [['user_type_id', 'asc']]
     });
     return res.send({ status: 1, data: data });
   } catch (err) {
@@ -802,6 +850,10 @@ const getUserType = async (req, res) => {
 const updateUserType = async (req, res) => {
   try {
     const user_type_id = req.params.user_type_id;
+
+    if (user_type_id == 1) {
+      return res.send({ status: 2, msg: "ไม่สามารถแก้ไขประเภทบรรจุนี้ได้" })
+    }
 
     const update = await UserType.update(
       {
@@ -822,6 +874,18 @@ const updateUserType = async (req, res) => {
 const removeUserType = async (req, res) => {
   try {
     const user_type_id = req.params.user_type_id;
+
+    if (user_type_id == 1) {
+      return res.send({ status: 2, msg: 'ไม่สามารถลบประเภทบรรจุนี้ได้' })
+    }
+
+    const updateUser = await User.update({
+      user_type_id: 1
+    },{
+      where: {
+        user_type_id: user_type_id
+      }
+    })
 
     const remove = await UserType.destroy({
       where: {
@@ -848,7 +912,7 @@ const createUserStatus = async (req, res) => {
 const getUserStatus = async (req, res) => {
   try {
     const data = await UserStatus.findAll({
-      order: [['user_status_name', 'asc']]
+      order: [['user_status_id', 'asc']]
     });
     return res.send({ status: 1, data: data });
   } catch (err) {

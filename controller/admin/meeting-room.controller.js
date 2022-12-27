@@ -265,6 +265,10 @@ const updateMeetingRoomSize = async (req, res) => {
     const room_size_id = req.params.room_size_id;
     const name = req.body.name;
 
+    if (room_size_id == 1) {
+      return res.send({ status: 2 , msg: "ไม่สามารถแก้ไขขนาดห้องนี้ได้"})
+    }
+
     const update = await MeetingRoomSize.update(
       {
         name: name,
@@ -283,6 +287,18 @@ const updateMeetingRoomSize = async (req, res) => {
 const removeMeetingRoomSize = async (req, res) => {
   try {
     const room_size_id = req.params.room_size_id;
+
+    if (room_size_id == 1) {
+      return res.send({ status: 2, msg: 'ไม่สามารถลบขนาดห้องนี้ได้' })
+    }
+
+    const updateUser = await MeetingRoom.update({
+      room_size_id: 1
+    },{
+      where: {
+        room_size_id: room_size_id
+      }
+    })
 
     const remove = await MeetingRoomSize.destroy({
       where: {

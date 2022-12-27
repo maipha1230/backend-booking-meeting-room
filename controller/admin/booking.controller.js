@@ -16,6 +16,7 @@ const {
     MeetingRoomStatus,
     MeetingRoomGallery,
   } = require("../../model/index.model");
+  const { Op } = require("sequelize");
   const { USER_IMAGE_PATH, JWT_SECRET, ROOM_IMAGE_PATH } = require("../../config/config");
   const bcrypt = require("bcrypt");
   
@@ -27,10 +28,15 @@ const {
   const getBookingList = async(req, res) => {
     try {
         const status = req.body.status
+        const room  = req.body.room
+        
+        const date = new Date()
 
         let booking = await Booking.findAll({
             where: {
-                approve_status: status
+                approve_status: status,
+                date: { [Op.gte]: date },
+                room_id: { [Op.in]: room }
             },
             order: [['createdAt', 'asc']],
             include: [
