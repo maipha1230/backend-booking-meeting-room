@@ -433,10 +433,60 @@ const {
 
   }
 
+  const getBookingHistory = async(req, res) => {
+    try {
+      const dateFrom = req.body.dateFrom
+      const dateTo = req.body.dateTo
+
+      const booking = await Booking.findAll({
+        where: {
+          date: { [Op.between]: [dateFrom, dateTo] }
+        },
+        order: [['date', 'asc']],
+        attributes:['booking_id', 'title', 'quantity', 'date', 'time_start', 'time_end'],
+        include: [
+          {
+            model: User,
+            attributes: ['f_name', 'l_name']
+          },
+          {
+            model: MeetingRoom,
+            attributes: ['room_name']
+          },
+          {
+            model: BookingPurpose,
+            attributes: ['name']
+          }
+        ]
+      })
+
+      data = []
+      booking.forEach((b) => {
+        let temp = {}
+        temp.booking_id = b.booking_id
+        temp.room_name = b.room.room_name
+        temp.title = b.title
+        temp.purpose = b.booking_purpose.name
+        temp.quantity = b.quantity
+        temp.date = b.date,
+        temp.time = b.time_start + ' - ' + b.time_end
+        temp.user = b.user.f_name + ' ' + b.user.l_name
+        data.push(temp)
+      })
+
+      return res.send({ status: 1, data: data })
+
+
+    } catch (err) {
+      return res.status(500).send(err.message)
+    }
+  }
+
   module.exports = {
     getBookingList: getBookingList,
     getBookingById: getBookingById,
     bookingPermission: bookingPermission,
     getEditBookingById: getEditBookingById,
-    adminUpdateBooking: adminUpdateBooking
+    adminUpdateBooking: adminUpdateBooking,
+    getBookingHistory: getBookingHistory
   }

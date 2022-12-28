@@ -221,5 +221,9 @@ router.get('/getRoomTime', dashboardController.getRoomTime)
 
 router.get('/getAffiliationChart', dashboardController.getAffiliationChart)
 
+////////////////// history ///////////////
+
+router.post('/getBookingHistory', bookingController.getBookingHistory)
+
 
 module.exports = router
