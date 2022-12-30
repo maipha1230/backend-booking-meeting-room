@@ -820,6 +820,42 @@ const userUpdateUser = async (req ,res) => {
   }
 }
 
+const userChangePassword = async (req, res) => {
+  try {
+    const user_id = res.locals.user_id
+    console.log(req.body);
+    let old = req.body.old
+    const password = await bcrypt.hash(req.body.password, 10);
+
+    let compare = await User.findOne({
+      where: {
+        user_id: user_id
+      },
+      attributes: ['password']
+    })
+    // console.log(await bcrypt.hash(old, 10) == compare.password);
+    // console.log(await bcrypt.hash(old, 10));
+    // console.log(compare.password);
+    let check_password = bcrypt.compareSync(old, compare.password)
+
+    if (!check_password) {
+      return res.send({ status: 2, msg: "รหัสผ่านเดิมไม่ถูกต้อง" })
+    } else {
+      let change = await User.update({
+        password: password
+      },
+      {
+        where: {
+          user_id: user_id
+        }
+      })
+      return res.send({ status: 1, msg: "เปลี่ยนรหัสผ่านใหม่สำเร็จ" })
+    }
+  } catch (err) {
+    return res.status(500).send(err.message)
+  }
+}
+
 
 module.exports = {
   getUserLoginForm: getUserLoginForm,
@@ -843,5 +879,6 @@ module.exports = {
   userGetUserAffiliation: userGetUserAffiliation,
   userGetUserRank: userGetUserRank,
   userGetUserType: userGetUserType,
-  userUpdateUser: userUpdateUser
+  userUpdateUser: userUpdateUser,
+  userChangePassword: userChangePassword
 };

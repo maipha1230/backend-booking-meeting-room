@@ -66,4 +66,8 @@ router.get('/userGetUserType', userController.userGetUserType)
 
 // user update profile
 router.put('/userUpdateUser', validator.userVerify, userController.userUpdateUser)
+
+// user change password
+router.put('/userChangePassword', validator.userVerify, userController.userChangePassword)
+
 module.exports = router
