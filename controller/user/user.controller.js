@@ -701,6 +701,126 @@ const getBookingToCalendar = async (req ,res) => {
   }
 }
 
+const uploadImageProfile = async(req, res) => {
+  try {
+    const user_id = res.locals.user_id
+    const img = req.body.gallery[0]
+    if (img) {
+      const upload = await User.update({
+        picture_url: img
+      },
+      {
+        where: {
+          user_id: user_id
+        }
+      })
+      return res.send({ status: 1, msg: 'อัพโหลดรูปโปรไฟล์สำเร็จ' })
+    }
+    return res.send({ status: 2 })
+  } catch (err) {
+    return res.status(500).send(err.message)
+  }
+}
+
+const getUserDetail = async(req ,res) => {
+  try {
+    const user_id = res.locals.user_id
+
+    const user = await User.findOne({
+      where: {
+        user_id: user_id
+      },
+    });
+
+    data = {};
+    data.f_name = user.f_name;
+    data.l_name = user.l_name;
+    data.phone = user.phone;
+    data.email = user.email;
+    data.picture_url = USER_IMAGE_PATH + user.picture_url;
+    data.affiliation = user.user_affiliation_id;
+    data.position = user.user_position_id;
+    data.rank= user.user_rank_id;
+    data.type = user.user_type_id;
+
+    return res.send({ status: 1, data: data });
+  } catch (err) {
+    return res.status(err.message);
+  }
+}
+
+const userGetUserPosition = async (req, res) => {
+  try {
+    const data = await UserPosition.findAll({
+      order: [['user_position_id', 'asc']]
+    });
+    return res.send({ status: 1, data: data });
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+};
+
+const userGetUserAffiliation = async (req, res) => {
+  try {
+    const data = await UserAffiliation.findAll({
+      order: [['user_affiliation_id', 'asc']]
+    });
+    return res.send({ status: 1, data: data });
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+};
+
+const userGetUserRank = async (req, res) => {
+  try {
+    const data = await UserRank.findAll({
+      order: [['user_rank_id', 'asc']]
+    });
+    return res.send({ status: 1, data: data });
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+};
+
+const userGetUserType = async (req, res) => {
+  try {
+    const data = await UserType.findAll({
+      order: [['user_type_id', 'asc']]
+    });
+    return res.send({ status: 1, data: data });
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+};
+
+const userUpdateUser = async (req ,res) => {
+  try {
+    const user_id = res.locals.user_id
+
+      const update = await User.update(
+        {
+          f_name: req.body.f_name,
+          l_name: req.body.l_name,
+          phone: req.body.phone,
+          email: req.body.email,
+          user_affiliation_id: req.body.affiliation,
+          user_position_id: req.body.position,
+          user_rank_id: req.body.rank,
+          user_type_id: req.body.type,
+        },
+        {
+          where: {
+            user_id: user_id,
+          },
+        }
+      );
+    return res.send({ status: 1, msg: "อัพเดตข้อมูลส่วนตัวสำเร็จ" });
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+}
+
+
 module.exports = {
   getUserLoginForm: getUserLoginForm,
   userLogin: userLogin,
@@ -716,5 +836,12 @@ module.exports = {
   userRemoveBooking: userRemoveBooking,
   checkUserOwnBooking: checkUserOwnBooking,
   getMeetingRoomList: getMeetingRoomList,
-  getBookingToCalendar: getBookingToCalendar
+  getBookingToCalendar: getBookingToCalendar,
+  uploadImageProfile: uploadImageProfile,
+  getUserDetail: getUserDetail,
+  userGetUserPosition: userGetUserPosition,
+  userGetUserAffiliation: userGetUserAffiliation,
+  userGetUserRank: userGetUserRank,
+  userGetUserType: userGetUserType,
+  userUpdateUser: userUpdateUser
 };

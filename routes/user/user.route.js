@@ -50,7 +50,20 @@ router.get('/getMeetingRoomList', userController.getMeetingRoomList)
 //get booking to calendar
 router.get('/getBookingToCalendar', userController.getBookingToCalendar)
 
+// put upload image
+router.put('/uploadImageProfile', validator.userVerify, multer.uploadImages, multer.resizeImagesUser, multer.getResult, userController.uploadImageProfile)
 
+// get user detail
+router.get('/getUserDetail', validator.userVerify, userController.getUserDetail)
 
+router.get('/userGetUserPosition', userController.userGetUserPosition)
 
+router.get('/userGetUserAffiliation', userController.userGetUserAffiliation)
+
+router.get('/userGetUserRank', userController.userGetUserRank)
+
+router.get('/userGetUserType', userController.userGetUserType)
+
+// user update profile
+router.put('/userUpdateUser', validator.userVerify, userController.userUpdateUser)
 module.exports = router

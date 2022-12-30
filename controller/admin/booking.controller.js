@@ -440,7 +440,8 @@ const {
 
       const booking = await Booking.findAll({
         where: {
-          date: { [Op.between]: [dateFrom, dateTo] }
+          date: { [Op.between]: [dateFrom, dateTo] },
+          approve_status: 1
         },
         order: [['date', 'asc']],
         attributes:['booking_id', 'title', 'quantity', 'date', 'time_start', 'time_end'],
