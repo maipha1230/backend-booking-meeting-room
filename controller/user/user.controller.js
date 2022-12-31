@@ -72,7 +72,7 @@ const userLogin = async (req, res) => {
             { user_id: user_id, role_id: user.user_role_id },
             JWT_SECRET,
             {
-              expiresIn: "2h",
+              expiresIn: "8h",
             }
           );
 
@@ -142,7 +142,7 @@ const adminLogin = async (req, res) => {
             { user_id: user_id, role_id: user.user_role_id },
             JWT_SECRET,
             {
-              expiresIn: "2h",
+              expiresIn: "8h",
             }
           );
 
