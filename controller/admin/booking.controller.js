@@ -462,8 +462,9 @@ const {
       })
 
       data = []
-      booking.forEach((b) => {
+      booking.forEach((b, index) => {
         let temp = {}
+        temp.index = index+1
         temp.booking_id = b.booking_id
         temp.room_name = b.room.room_name
         temp.title = b.title

@@ -140,6 +140,9 @@ const getAdminOverview = async(req, res) => {
 
 const getRoomTime = async (req, res) => {
   try {
+    console.log(req.body);
+    let { dateStart, dateEnd } = req.body
+
     let room = await MeetingRoom.findAll({
       attributes: ['room_id', 'room_name', 'room_color'],
       include: [
@@ -150,13 +153,30 @@ const getRoomTime = async (req, res) => {
       ]
     })
     let dateNow = new Date()
-    let booking = await Booking.findAll({
-      where: {
-        approve_status: 1,
-        date: { [Op.lt]: dateNow }
-      },
-      attributes: ['time_start', 'time_end', 'room_id']
-    })
+    let dateMinus30 = new Date().setDate(dateNow.getDate() - 30)
+    let days30 = new Date(dateMinus30)
+
+    let booking
+    if (!dateStart || !dateEnd) {
+      let time = await Booking.findAll({
+        where: {
+          approve_status: 1,
+          date: { [Op.between]: [days30, dateNow] },
+        },
+        attributes: ['time_start', 'time_end', 'room_id']
+      })
+      booking = time
+    } else { 
+      let time = await Booking.findAll({
+        where: {
+          approve_status: 1,
+          date: { [Op.between]: [dateStart, dateEnd]},
+        },
+        attributes: ['time_start', 'time_end', 'room_id']
+      })
+     booking = time
+    }
+
 
     function timetoMinutes(a, b){
       let start = String(a).split(":").map(Number)

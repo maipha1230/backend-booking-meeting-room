@@ -217,7 +217,7 @@ router.get('/getUserOverview', dashboardController.getUserOverview)
 
 router.get('/getAdminOverview', dashboardController.getAdminOverview)
 
-router.get('/getRoomTime', dashboardController.getRoomTime)
+router.post('/getRoomTime', dashboardController.getRoomTime)
 
 router.get('/getAffiliationChart', dashboardController.getAffiliationChart)
 

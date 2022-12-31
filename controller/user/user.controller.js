@@ -334,6 +334,7 @@ const userSubmitBooking = async (req, res) => {
 
 const userEditBooking = async(req, res) => {
   try {
+    console.log(req.body);
     const user_id = res.locals.user_id
     const booking_id = req.params.booking_id
 
