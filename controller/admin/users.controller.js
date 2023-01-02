@@ -479,6 +479,11 @@ const updateAdmin = async (req, res) => {
         }
       );
     }
+
+    let admin_id = res.locals.admin_id
+    if (admin_id == user_id) {
+      return res.send({ status: 2, msg: "แก้ไขผู้ดูแลระบบสำเร็จ" });
+    }
     return res.send({ status: 1, msg: "แก้ไขผู้ดูแลระบบสำเร็จ" });
   } catch (err) {
     return res.status(500).send(err.message);

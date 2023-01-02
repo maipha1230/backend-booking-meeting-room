@@ -29,21 +29,31 @@ const userStatus = require("../../model/schema/users/user-status");
 
 const getBookingsOverview = async(req ,res) => {
   try {
-   let totalCount = await Booking.count()
+
+    let dateNow = new Date()
+
+   let totalCount = await Booking.count({
+    where: {
+      date: { [Op.gte]: dateNow }
+    }
+   })
 
    let booking_wait_count = await Booking.count({
     where: {
-      approve_status: 0
+      approve_status: 0,
+      date: { [Op.gte]: dateNow }
     }
    })
    let booking_approve_count = await Booking.count({
     where: {
-      approve_status: 1
+      approve_status: 1,
+      date: { [Op.gte]: dateNow }
     }
    })
    let booking_refuse_count = await Booking.count({
     where: {
-      approve_status: 2
+      approve_status: 2,
+      date: { [Op.gte]: dateNow }
     }
    })
 
