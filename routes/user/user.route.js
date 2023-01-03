@@ -50,6 +50,9 @@ router.get('/getMeetingRoomList', userController.getMeetingRoomList)
 //get booking to calendar
 router.get('/getBookingToCalendar', userController.getBookingToCalendar)
 
+//get event date
+router.post('/eventDateCalendar', userController.eventDateCalendar)
+
 // put upload image
 router.put('/uploadImageProfile', validator.userVerify, multer.uploadImages, multer.resizeImagesUser, multer.getResult, userController.uploadImageProfile)
 

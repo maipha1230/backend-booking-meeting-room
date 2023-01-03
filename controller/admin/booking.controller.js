@@ -17,7 +17,7 @@ const {
     MeetingRoomGallery,
   } = require("../../model/index.model");
   const { Op } = require("sequelize");
-  const { USER_IMAGE_PATH, JWT_SECRET, ROOM_IMAGE_PATH } = require("../../config/config");
+  const { USER_IMAGE_PATH, JWT_SECRET, ROOM_IMAGE_PATH, HOST } = require("../../config/config");
   const bcrypt = require("bcrypt");
   
   const path = require("path");
@@ -256,7 +256,7 @@ const {
                 booking_id: booking_id
             },
             order: [['booking_id', 'desc']],
-            attributes: ['booking_id', 'date'],
+            attributes: ['booking_id', 'date', 'time_start', 'time_end', 'title'],
             include: [ 
               { model: MeetingRoom, attributes: ['room_name'] },
               { model: User, attributes: ['f_name', 'l_name'] } ]
@@ -276,21 +276,19 @@ const {
             msg += "(ผ่านการอนุมัติ)\n"
             msg += `ยืนยันโดยผู้ดูแลระบบ(${admin.f_name} ${admin.l_name})\n`
             msg += `ห้องประชุม: ${latest.room.room_name}\n`
-            msg += `เรื่อง: ${req.body.title}\n`
+            msg += `เรื่อง: ${latest.title}\n`
             msg += `ผู้จอง: ${latest.user.f_name} ${latest.user.l_name}\n`
             msg += `วันที่: ${latest.date}\n`
-            msg += `เวลา: ${req.body.time_start} - ${req.body.time_end}\n`
-            msg += `ลิงค์การอนุมัติ: http://localhost:4200/admin/booking-room`
+            msg += `เวลา: ${latest.time_start} - ${latest.time_end}\n`
           } else if (permit == 2) {
             msg += "แจ้งเตือนการจองห้องประชุม\n"
             msg += "(ไม่ผ่านผ่านการอนุมัติ)\n"
             msg += `ถูกแก้ไขโดยผู้ดูแลระบบ(${admin.f_name} ${admin.l_name})\n`
             msg += `ห้องประชุม: ${latest.room.room_name}\n`
-            msg += `เรื่อง: ${req.body.title}\n`
+            msg += `เรื่อง: ${latest.title}\n`
             msg += `ผู้จอง: ${latest.user.f_name} ${latest.user.l_name}\n`
             msg += `วันที่: ${latest.date}\n`
-            msg += `เวลา: ${req.body.time_start} - ${req.body.time_end}\n`
-            msg += `ลิงค์การอนุมัติ: http://localhost:4200/admin/booking-room`
+            msg += `เวลา: ${latest.time_start} - ${latest.time_end}\n`
           }
           lineNotify.notify({message: msg})
           }
@@ -420,7 +418,6 @@ const {
           msg += `ผู้จอง: ${latest.user.f_name} ${latest.user.l_name}\n`
           msg += `วันที่: ${latest.date}\n`
           msg += `เวลา: ${req.body.time_start} - ${req.body.time_end}\n`
-          msg += `ลิงค์การอนุมัติ: http://localhost:4200/admin/booking-room`
           lineNotify.notify({message: msg})
           }
 

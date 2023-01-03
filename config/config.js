@@ -9,6 +9,7 @@ const USER_IMAGE_PATH = process.env.USER_IMAGE_PATH
 const ROOM_IMAGE_PATH = process.env.ROOM_IMAGE_PATH 
 const DEVICE_IMAGE_PATH = process.env.DEVICE_IMAGE_PATH 
 const JWT_SECRET = process.env.JWT_SECRET
+const HOST = process.env.HOST
 
 module.exports = {
     PORT: PORT,
@@ -19,5 +20,6 @@ module.exports = {
     USER_IMAGE_PATH: USER_IMAGE_PATH,
     ROOM_IMAGE_PATH: ROOM_IMAGE_PATH,
     DEVICE_IMAGE_PATH: DEVICE_IMAGE_PATH,
-    JWT_SECRET: JWT_SECRET
+    JWT_SECRET: JWT_SECRET,
+    HOST: HOST
 }

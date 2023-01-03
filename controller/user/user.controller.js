@@ -23,6 +23,7 @@ const {
   USER_IMAGE_PATH,
   JWT_SECRET,
   ROOM_IMAGE_PATH,
+  HOST
 } = require("../../config/config");
 
 const getUserLoginForm = async (req, res) => {
@@ -306,10 +307,8 @@ const userSubmitBooking = async (req, res) => {
     let token = await LineNotify.findOne({
       order: [['line_notify_id', 'desc']]
     })
-    console.log(token);
     if (token) {
       token = token.token
-      console.log(token);
       const lineNotify = require("line-notify-nodejs")(
       token 
     );
@@ -321,7 +320,7 @@ const userSubmitBooking = async (req, res) => {
     msg += `ผู้จอง: ${latest.user.f_name} ${latest.user.l_name}\n`
     msg += `วันที่: ${latest.date}\n`
     msg += `เวลา: ${req.body.time_start} - ${req.body.time_end}\n`
-    msg += `ลิงค์การอนุมัติ: http://localhost:4200/admin/booking-room`
+    msg += `ลิงค์การอนุมัติ: ${HOST}/admin/booking-room/${booking_id}`
     lineNotify.notify({message: msg})
     }
     
@@ -440,7 +439,7 @@ const userEditBooking = async(req, res) => {
     msg += `ผู้จอง: ${latest.user.f_name} ${latest.user.l_name}\n`
     msg += `วันที่: ${latest.date}\n`
     msg += `เวลา: ${req.body.time_start} - ${req.body.time_end}\n`
-    msg += `ลิงค์การอนุมัติ: http://localhost:4200/admin/booking-room`
+    msg += `ลิงค์การอนุมัติ: ${HOST}/admin/booking-room/${latest.booking_id}`
     lineNotify.notify({message: msg})
     }
    
@@ -536,7 +535,7 @@ const userRemoveBooking = async(req, res) => {
         booking_id: booking_id
       },
       order: [['booking_id', 'desc']],
-      attributes: ['booking_id', 'date'],
+      attributes: ['booking_id', 'date', 'time_start', 'time_end', 'title'],
       include: [ 
         { model: MeetingRoom, attributes: ['room_name'] },
         { model: User, attributes: ['f_name', 'l_name'] } ]
@@ -551,10 +550,8 @@ const userRemoveBooking = async(req, res) => {
     let token = await LineNotify.findOne({
       order: [['line_notify_id', 'desc']]
     })
-    console.log(token);
     if (token) {
       token = token.token
-      console.log(token);
       const lineNotify = require("line-notify-nodejs")(
       token 
     );
@@ -562,11 +559,10 @@ const userRemoveBooking = async(req, res) => {
     let msg = "\n"
     msg += "แจ้งเตือนการจองห้องประชุม ถูกยกเลิกโดยผู้จอง\n"
     msg += `ห้องประชุม: ${latest.room.room_name}\n`
-    msg += `เรื่อง: ${req.body.title}\n`
+    msg += `เรื่อง: ${latest.title}\n`
     msg += `ผู้จอง: ${latest.user.f_name} ${latest.user.l_name}\n`
     msg += `วันที่: ${latest.date}\n`
-    msg += `เวลา: ${req.body.time_start} - ${req.body.time_end}\n`
-    msg += `ลิงค์การอนุมัติ: http://localhost:4200/admin/booking-room`
+    msg += `เวลา: ${latest.time_start} - ${latest.time_end}\n`
     lineNotify.notify({message: msg})
     }
 
@@ -692,6 +688,52 @@ const getBookingToCalendar = async (req ,res) => {
       temp.end = new Date(b.date+' '+b.time_end)
       temp.backgroundColor = b.room.room_color
       temp.borderColor = b.room.room_color
+      data.push(temp)
+    })
+
+    return res.send({ status: 1, data: data })
+
+  } catch (err) {
+    return res.status(500).send(err.message)
+  }
+}
+
+const eventDateCalendar = async (req, res) => {
+  try {
+    const date = req.body.date
+
+    let booking = await Booking.findAll({
+      where: {
+        date: date,
+        approve_status: 1,
+      },
+      order: [['createdAt', 'asc']],
+      attributes: ['title', 'date', 'time_start', 'time_end'],
+      include: [
+        {
+          model: User,
+          attributes: ['f_name', 'l_name']
+        },
+        {
+          model: MeetingRoom,
+          attributes: ['room_name']
+        }
+      ]
+    })
+
+    if (!booking || booking.length == 0) {
+      return res.end()
+    }
+
+    let data = []
+
+    booking.forEach((b) => {
+      let temp = {}
+      temp.title = b.title
+      temp.date = b.date
+      temp.time = b.time_start + " - " + b.time_end
+      temp.user = b.user.f_name+ " " +b.user.l_name  
+      temp.room_name = b.room.room_name
       data.push(temp)
     })
 
@@ -874,6 +916,7 @@ module.exports = {
   checkUserOwnBooking: checkUserOwnBooking,
   getMeetingRoomList: getMeetingRoomList,
   getBookingToCalendar: getBookingToCalendar,
+  eventDateCalendar: eventDateCalendar,
   uploadImageProfile: uploadImageProfile,
   getUserDetail: getUserDetail,
   userGetUserPosition: userGetUserPosition,
