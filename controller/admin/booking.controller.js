@@ -481,11 +481,31 @@ const {
     }
   }
 
+  const checkBookingExist = async(req, res) => {
+    try {
+      const booking_id = req.params.booking_id
+      const dateNow = new Date()
+      const isExist = await Booking.findOne({
+        where: {
+          date: { [Op.gte]: dateNow },
+          booking_id: booking_id
+        }
+      })
+      if (!isExist) {
+        return res.send({ status: 2 })
+      }
+      return res.send({ status: 1 })
+    } catch (err) {
+      return res.status(500).send(err.message)
+    }
+  }
+
   module.exports = {
     getBookingList: getBookingList,
     getBookingById: getBookingById,
     bookingPermission: bookingPermission,
     getEditBookingById: getEditBookingById,
     adminUpdateBooking: adminUpdateBooking,
-    getBookingHistory: getBookingHistory
+    getBookingHistory: getBookingHistory,
+    checkBookingExist: checkBookingExist
   }

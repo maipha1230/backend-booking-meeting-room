@@ -150,7 +150,7 @@ const getAdminOverview = async(req, res) => {
 
 const getRoomTime = async (req, res) => {
   try {
-    console.log(req.body);
+    //console.log(req.body);
     let { dateStart, dateEnd } = req.body
 
     let room = await MeetingRoom.findAll({

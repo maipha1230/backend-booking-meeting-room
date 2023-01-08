@@ -333,7 +333,7 @@ const userSubmitBooking = async (req, res) => {
 
 const userEditBooking = async(req, res) => {
   try {
-    console.log(req.body);
+    //console.log(req.body);
     const user_id = res.locals.user_id
     const booking_id = req.params.booking_id
 
@@ -866,7 +866,7 @@ const userUpdateUser = async (req ,res) => {
 const userChangePassword = async (req, res) => {
   try {
     const user_id = res.locals.user_id
-    console.log(req.body);
+    //console.log(req.body);
     let old = req.body.old
     const password = await bcrypt.hash(req.body.password, 10);
 

@@ -18,7 +18,7 @@ const jwt = require("jsonwebtoken");
 
 const createUser = async (req, res) => {
   try {
-    console.log(req.body);
+    //console.log(req.body);
     const password = await bcrypt.hash(req.body.password, 10);
 
     if (req.body.gallery) {
@@ -152,7 +152,7 @@ const updateUser = async (req, res) => {
   try {
     const user_id = req.params.user_id;
 
-    console.log(req.body);
+    //console.log(req.body);
 
     if (req.body.gallery.length > 0) {
       let old_image = await User.findOne({
@@ -170,7 +170,7 @@ const updateUser = async (req, res) => {
           );
           if (fs.existsSync(absolutePath)) {
             fs.unlinkSync(String(absolutePath));
-            console.log("delete " + absolutePath);
+            //console.log("delete " + absolutePath);
           }
         } catch (error) {
           res.status(500).send(error.message);
@@ -240,7 +240,7 @@ const removeUser = async (req, res) => {
         );
         if (fs.existsSync(absolutePath)) {
           fs.unlinkSync(String(absolutePath));
-          console.log("delete " + absolutePath);
+          //console.log("delete " + absolutePath);
         }
       } catch (error) {
         res.status(500).send(error.message);
@@ -282,7 +282,7 @@ const resetUserPassword = async (req, res) => {
 
 const createAdmin = async (req, res) => {
   try {
-    console.log(req.body);
+    //console.log(req.body);
     const password = await bcrypt.hash(req.body.password, 10);
 
     if (req.body.gallery) {
@@ -416,7 +416,7 @@ const updateAdmin = async (req, res) => {
   try {
     const user_id = req.params.user_id;
 
-    console.log(req.body);
+    //console.log(req.body);
 
     if (req.body.gallery.length > 0) {
       let old_image = await User.findOne({
@@ -433,7 +433,7 @@ const updateAdmin = async (req, res) => {
           );
           if (fs.existsSync(absolutePath)) {
             fs.unlinkSync(String(absolutePath));
-            console.log("delete " + absolutePath);
+            //console.log("delete " + absolutePath);
           }
         } catch (error) {
           res.status(500).send(error.message);
@@ -508,7 +508,7 @@ const removeAdmin = async (req, res) => {
         );
         if (fs.existsSync(absolutePath)) {
           fs.unlinkSync(String(absolutePath));
-          console.log("delete " + absolutePath);
+          //console.log("delete " + absolutePath);
         }
       } catch (error) {
         res.status(500).send(error.message);

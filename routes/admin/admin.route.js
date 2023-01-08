@@ -209,6 +209,9 @@ router.get('/getEditBookingById/:booking_id', bookingController.getEditBookingBy
 //admin edit booking
 router.put('/adminUpdateBooking/:booking_id', bookingController.adminUpdateBooking)
 
+//check exist booking
+router.get('/checkBookingExist/:booking_id', bookingController.checkBookingExist)
+
 ////////////////////// dashboard ///////////////
 
 router.get('/getBookingsOverview', dashboardController.getBookingsOverview)

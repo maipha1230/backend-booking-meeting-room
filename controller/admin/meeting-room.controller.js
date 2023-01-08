@@ -193,7 +193,7 @@ const removeMeetingRoom = async (req, res) => {
         );
         if (fs.existsSync(absolutePath)) {
           fs.unlinkSync(String(absolutePath));
-          console.log("delete " + absolutePath);
+          //console.log("delete " + absolutePath);
         }
       } catch (error) {
         res.status(500).send(error.message);
@@ -222,7 +222,7 @@ const removeMeetingRoomImage = async (req, res) => {
       );
       if (fs.existsSync(absolutePath)) {
         fs.unlinkSync(String(absolutePath));
-        console.log("delete " + absolutePath);
+        //console.log("delete " + absolutePath);
       }
     } catch (error) {
       res.status(500).send(error.message);
@@ -436,7 +436,7 @@ const updateMeetingRoomDevice = async (req, res) => {
           );
           if (fs.existsSync(absolutePath)) {
             fs.unlinkSync(String(absolutePath));
-            console.log("delete " + absolutePath);
+            //console.log("delete " + absolutePath);
           }
         } catch (error) {
           res.status(500).send(error.message);
@@ -491,7 +491,7 @@ const removeMeetingRoomDevice = async(req, res) => {
               );
               if (fs.existsSync(absolutePath)) {
                 fs.unlinkSync(String(absolutePath));
-                console.log("delete " + absolutePath);
+                //console.log("delete " + absolutePath);
               }
             } catch (error) {
               res.status(500).send(error.message);
