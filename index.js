@@ -20,10 +20,6 @@ const db = require("./model/index.model");
 // db.sequelize.sync({ force: true, alter: true });
 db.sequelize.sync();
 
-// app.get('/', (req, res) => {
-//     return res.send('Welcome to api')
-// })
-
 app.use('/api', require('./routes/index.route'))
 
 app.get('*', (req, res) => {
@@ -31,5 +27,5 @@ app.get('*', (req, res) => {
   });
 
 app.listen(PORT || 3000, () => {
-    console.log('server is running on port: 3000');
+    console.log('server is running on port: '+ PORT);
 })
