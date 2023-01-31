@@ -500,6 +500,26 @@ const {
     }
   }
 
+  const endMeeting = async(req, res) => {
+    try {
+      const booking_id = req.params.booking_id
+      const time_end = req.body.time_end
+
+      const update = await Booking.update({
+        time_end: time_end
+      },
+      {
+        where: {
+          booking_id: booking_id
+        }
+      })
+
+      return res.send({ status: 1, msg: "จบการประชุมสำเร็จ" })
+    } catch (err) {
+      return res.status(500).send(err.message)
+    }
+  }
+
   module.exports = {
     getBookingList: getBookingList,
     getBookingById: getBookingById,
@@ -507,5 +527,6 @@ const {
     getEditBookingById: getEditBookingById,
     adminUpdateBooking: adminUpdateBooking,
     getBookingHistory: getBookingHistory,
-    checkBookingExist: checkBookingExist
+    checkBookingExist: checkBookingExist,
+    endMeeting: endMeeting
   }

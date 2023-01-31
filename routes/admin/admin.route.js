@@ -212,6 +212,10 @@ router.put('/adminUpdateBooking/:booking_id', bookingController.adminUpdateBooki
 //check exist booking
 router.get('/checkBookingExist/:booking_id', bookingController.checkBookingExist)
 
+//end meeting
+router.post('/endMeeting/:booking_id', bookingController.endMeeting)
+
+
 ////////////////////// dashboard ///////////////
 
 router.get('/getBookingsOverview', dashboardController.getBookingsOverview)
