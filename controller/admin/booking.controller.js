@@ -312,7 +312,8 @@ const {
             where: {
               date: req.body.date,
               room_id: req.body.room,
-              approve_status: 1
+              approve_status: 1,
+              booking_id: { [Op.ne]: booking_id }
             },
             attributes: ['time_start', 'time_end'],
             order: [['time_start', 'asc']]
