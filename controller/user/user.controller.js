@@ -622,7 +622,10 @@ const getMeetingRoomList = async(req ,res) => {
           model: MeetingRoomGallery,
           attributes: ['img_path']
         }
-      ]
+      ],
+      where: {
+        room_status_id: 1
+      }
     })
 
     let data = []
