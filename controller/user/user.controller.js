@@ -902,6 +902,98 @@ const userChangePassword = async (req, res) => {
   }
 }
 
+const getBookingPrint = async(req, res) => {
+  try {
+    const booking_id = req.params.booking_id
+
+    let temp = await Booking.findOne({
+        where: {
+            booking_id: booking_id
+        },
+        attributes: ['title', 'quantity', 'date', 'time_start', 'time_end', 'link', 'createdAt', 'updatedAt'],
+        include: [
+            {
+                model: BookingPurpose,
+                attributes: ['name']
+            },
+            {
+                model: BookingDevice,
+                attributes: ['booking_device_id'],
+                include: [{
+                    model: MeetingRoomDevice,
+                    attributes: ['name']
+                }]
+            },
+            {
+                model: MeetingRoom,
+                attributes:['room_name', 'room_capacity'],
+                include:[
+                    {
+                        model: MeetingRoomSize,
+                        attributes: ['name']
+                    },
+                    {
+                        model: MeetingRoomStatus,
+                        attributes: ['name']
+                    },
+                    {
+                        model: MeetingRoomGallery,
+                        attributes: ['img_path']
+                    }
+                ]
+            },
+            {
+                model: User,
+                attributes: ['f_name', 'l_name', 'phone', 'email', 'picture_url'],
+                include: [
+                    {
+                        model: UserAffiliation,
+                        attributes: ['user_affiliation_name']
+                    },
+                    {
+                        model: UserPosition,
+                        attributes: ['user_position_name']
+                    },
+                    {
+                        model: UserRank,
+                        attributes: ['user_rank_name']
+                    },
+                    {
+                        model: UserType,
+                        attributes: ['user_type_name']
+                    },
+                ]
+            }
+        ]
+    })
+
+    let booking = {}
+    booking.booking_id = req.params.booking_id
+    booking.user = temp.user.f_name + " " + temp.user.l_name
+    booking.phone = temp.user.phone
+    booking.position = temp.user.user_position.user_position_name
+    booking.affiliation = temp.user.user_affiliation.user_affiliation_name
+    booking.room = temp.room.room_name
+    booking.title = temp.title
+    booking.quantity = temp.quantity
+    booking.date = temp.date
+    booking.time_start = temp.time_start
+    booking.time_end = temp.time_end
+    booking.updatedAt = temp.updatedAt
+    booking.purpose = temp.booking_purpose.name
+    booking.link = temp.link
+    booking.device = []
+    temp.booking_devices.forEach((device) => {
+        booking.device.push(device.room_device.name)
+    })
+
+    return res.send({ status: 1, data: booking})
+
+} catch (err) {
+    return res.status(500).send(err.message)
+}
+}
+
 
 module.exports = {
   getUserLoginForm: getUserLoginForm,
@@ -927,5 +1019,6 @@ module.exports = {
   userGetUserRank: userGetUserRank,
   userGetUserType: userGetUserType,
   userUpdateUser: userUpdateUser,
-  userChangePassword: userChangePassword
+  userChangePassword: userChangePassword,
+  getBookingPrint: getBookingPrint
 };

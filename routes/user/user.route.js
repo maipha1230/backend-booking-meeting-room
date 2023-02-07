@@ -73,4 +73,7 @@ router.put('/userUpdateUser', validator.userVerify, userController.userUpdateUse
 // user change password
 router.put('/userChangePassword', validator.userVerify, userController.userChangePassword)
 
+//get booking print
+router.get('/getBookingPrint/:booking_id', validator.userVerify, userController.getBookingPrint)
+
 module.exports = router
